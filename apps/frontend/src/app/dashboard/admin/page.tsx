@@ -10,14 +10,16 @@ import {
   Filter,
   MoreVertical,
   Check,
-  X
+  X,
+  Building2,
+  Plus
 } from 'lucide-react';
 import { useState } from 'react';
 
 export default function SuperAdminDashboard() {
   const stats = [
     { label: 'Revenus Mensuels', value: '2.4M FCFA', change: '+12%', icon: TrendingUp, color: 'bg-green-500' },
-    { label: 'Opérateurs Actifs', value: '142', change: '+5', icon: Building2Icon, color: 'bg-primary' },
+    { label: 'Opérateurs Actifs', value: '142', change: '+5', icon: Building2, color: 'bg-primary' },
     { label: 'Dossiers en attente', value: '12', change: '-2', icon: ShieldCheck, color: 'bg-orange-500' },
     { label: 'Agents Commerciaux', value: '8', change: 'Stable', icon: Briefcase, color: 'bg-blue-500' },
   ];
@@ -116,7 +118,7 @@ export default function SuperAdminDashboard() {
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold">Équipe Commerciale</h2>
             <button className="bg-primary text-white p-2 rounded-xl">
-              <PlusIcon className="w-5 h-5" />
+              <Plus className="w-5 h-5" />
             </button>
           </div>
 
@@ -148,17 +150,5 @@ export default function SuperAdminDashboard() {
         </div>
       </div>
     </div>
-  );
-}
-
-function Building2Icon(props: any) {
-  return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
-  );
-}
-
-function PlusIcon(props: any) {
-  return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
   );
 }
