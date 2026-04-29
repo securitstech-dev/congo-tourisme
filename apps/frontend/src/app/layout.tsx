@@ -14,6 +14,8 @@ export const metadata: Metadata = {
   description: "Plateforme SaaS de tourisme national — Découvrez les merveilles de la République du Congo.",
 };
 
+import Footer from "@/components/layout/footer";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -25,7 +27,10 @@ export default function RootLayout({
       className={`${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
-        {children}
+        <main className="flex-grow">
+          {children}
+        </main>
+        <Footer />
         <Chatbot />
       </body>
     </html>

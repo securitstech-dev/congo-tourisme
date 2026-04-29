@@ -3,122 +3,162 @@
 import { 
   Users, 
   TrendingUp, 
+  ShieldCheck, 
   CreditCard, 
-  Building2,
-  CheckCircle2,
-  XCircle,
-  Clock,
-  ArrowUpRight
+  Briefcase,
+  Search,
+  Filter,
+  MoreVertical,
+  Check,
+  X
 } from 'lucide-react';
+import { useState } from 'react';
 
-export default function AdminDashboard() {
-  const kpis = [
-    { label: 'Utilisateurs Totaux', value: '12,450', change: '+12%', icon: Users, color: 'text-blue-600', bg: 'bg-blue-100' },
-    { label: 'Revenu Mensuel', value: '4.8M FCFA', change: '+8%', icon: CreditCard, color: 'text-green-600', bg: 'bg-green-100' },
-    { label: 'Opérateurs Actifs', value: '156', change: '+5%', icon: Building2, color: 'text-purple-600', bg: 'bg-purple-100' },
-    { label: 'Taux de Rétention', value: '94%', change: '+2%', icon: TrendingUp, color: 'text-orange-600', bg: 'bg-orange-100' },
+export default function SuperAdminDashboard() {
+  const stats = [
+    { label: 'Revenus Mensuels', value: '2.4M FCFA', change: '+12%', icon: TrendingUp, color: 'bg-green-500' },
+    { label: 'Opérateurs Actifs', value: '142', change: '+5', icon: Building2Icon, color: 'bg-primary' },
+    { label: 'Dossiers en attente', value: '12', change: '-2', icon: ShieldCheck, color: 'bg-orange-500' },
+    { label: 'Agents Commerciaux', value: '8', change: 'Stable', icon: Briefcase, color: 'bg-blue-500' },
   ];
 
   const pendingOperators = [
-    { id: '1', name: 'Grand Hôtel de Brazza', manager: 'Sylvain Ngoma', date: 'Il y a 2h', type: 'HÔTEL' },
-    { id: '2', name: 'Le Mayombe Expériences', manager: 'Alice Mviri', date: 'Il y a 5h', type: 'AGENCE' },
-    { id: '3', name: 'Mami Wata Coast', manager: 'Paul Kimpolo', date: 'Hier', type: 'RESTAURANT' },
+    { id: 1, name: 'Lodge de la Lukaya', type: 'Hôtel', location: 'Kinshasa', date: '28 Avr 2024' },
+    { id: 2, name: 'Le Terminalia', type: 'Restaurant', location: 'Pointe-Noire', date: '29 Avr 2024' },
+    { id: 3, name: 'Congo Tours Agency', type: 'Agence', location: 'Brazzaville', date: '29 Avr 2024' },
   ];
 
   return (
-    <div className="space-y-10">
-      {/* Welcome */}
-      <div className="flex items-center justify-between">
+    <div className="space-y-10 pb-20">
+      <div className="flex justify-between items-end">
         <div>
-          <h1 className="text-3xl font-black text-gray-900">Tableau de bord Global</h1>
-          <p className="text-gray-500 font-medium">Vue d'ensemble de la plateforme Congo Tourisme.</p>
+          <h1 className="text-4xl font-black text-foreground">Console Admin <span className="text-primary">Securits Tech</span></h1>
+          <p className="text-subtext mt-2 font-medium">Vue d'ensemble de la plateforme Congo Tourisme.</p>
         </div>
-        <div className="flex items-center gap-4 bg-white p-2 rounded-2xl border border-gray-100 shadow-sm">
-           <button className="px-4 py-2 bg-primary text-white rounded-xl font-bold text-sm">Aujourd'hui</button>
-           <button className="px-4 py-2 text-gray-400 font-bold text-sm">7 derniers jours</button>
+        <div className="bg-white p-2 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-2">
+          <div className="px-4 py-2 bg-accent/20 rounded-xl text-xs font-bold text-subtext">ADMIN UNIQUE</div>
+          <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white font-bold">ST</div>
         </div>
       </div>
 
-      {/* KPI Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        {kpis.map((kpi, i) => (
-          <div key={i} className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm hover:shadow-xl transition-all group">
-            <div className="flex items-start justify-between mb-6">
-              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${kpi.bg} ${kpi.color}`}>
-                <kpi.icon className="w-7 h-7" />
-              </div>
-              <div className="flex items-center gap-1 text-green-600 font-bold text-sm">
-                {kpi.change}
-                <ArrowUpRight className="w-4 h-4" />
-              </div>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((stat) => (
+          <div key={stat.label} className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm hover:shadow-xl transition-all">
+            <div className={`w-12 h-12 ${stat.color} rounded-2xl flex items-center justify-center text-white mb-6 shadow-lg shadow-black/5`}>
+              <stat.icon className="w-6 h-6" />
             </div>
-            <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">{kpi.label}</p>
-            <p className="text-3xl font-black text-gray-900">{kpi.value}</p>
+            <p className="text-subtext font-bold text-sm uppercase tracking-wider">{stat.label}</p>
+            <div className="flex items-end gap-3 mt-1">
+              <h3 className="text-3xl font-black text-foreground">{stat.value}</h3>
+              <span className={`text-xs font-bold px-2 py-1 rounded-lg ${
+                stat.change.startsWith('+') ? 'bg-green-100 text-green-600' : 
+                stat.change === 'Stable' ? 'bg-blue-100 text-blue-600' : 'bg-orange-100 text-orange-600'
+              }`}>
+                {stat.change}
+              </span>
+            </div>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Validations en attente */}
-        <div className="lg:col-span-2 bg-white rounded-[40px] border border-gray-100 shadow-sm overflow-hidden">
-          <div className="p-8 border-b border-gray-50 flex items-center justify-between">
-            <h3 className="font-black text-gray-900 text-xl">Validations en attente</h3>
-            <button className="text-primary font-bold text-sm hover:underline">Tout voir</button>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        {/* Main Section - Validations */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-bold">Validations de Dossiers</h2>
+            <button className="text-primary font-bold text-sm hover:underline">Voir tout →</button>
           </div>
-          <div className="divide-y divide-gray-50">
-            {pendingOperators.map((op) => (
-              <div key={op.id} className="p-8 flex items-center justify-between hover:bg-gray-50 transition-all group">
-                <div className="flex items-center gap-5">
-                  <div className="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center text-gray-400 font-black">
-                    {op.name.charAt(0)}
+          
+          <div className="bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="bg-accent/5 border-b border-gray-100">
+                  <th className="px-8 py-5 text-xs font-bold text-subtext uppercase tracking-widest">Établissement</th>
+                  <th className="px-8 py-5 text-xs font-bold text-subtext uppercase tracking-widest">Type / Lieu</th>
+                  <th className="px-8 py-5 text-xs font-bold text-subtext uppercase tracking-widest text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {pendingOperators.map((op) => (
+                  <tr key={op.id} className="hover:bg-accent/5 transition-colors group">
+                    <td className="px-8 py-6">
+                      <div>
+                        <p className="font-bold text-foreground">{op.name}</p>
+                        <p className="text-xs text-subtext">Soumis le {op.date}</p>
+                      </div>
+                    </td>
+                    <td className="px-8 py-6">
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 bg-accent/20 rounded-full text-[10px] font-bold text-subtext">{op.type}</span>
+                        <span className="text-sm font-medium text-subtext">{op.location}</span>
+                      </div>
+                    </td>
+                    <td className="px-8 py-6">
+                      <div className="flex justify-center gap-3">
+                        <button className="w-10 h-10 bg-green-500 text-white rounded-xl flex items-center justify-center hover:opacity-90 transition-opacity">
+                          <Check className="w-5 h-5" />
+                        </button>
+                        <button className="w-10 h-10 bg-red-500 text-white rounded-xl flex items-center justify-center hover:opacity-90 transition-opacity">
+                          <X className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Sidebar - Commercial Team */}
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-bold">Équipe Commerciale</h2>
+            <button className="bg-primary text-white p-2 rounded-xl">
+              <PlusIcon className="w-5 h-5" />
+            </button>
+          </div>
+
+          <div className="bg-white rounded-[32px] border border-gray-100 shadow-sm p-8 space-y-6">
+            {[
+              { name: 'Jean Makosso', deals: 12, target: '80%', color: 'bg-primary' },
+              { name: 'Sarah Bantsimba', deals: 8, target: '65%', color: 'bg-secondary' },
+              { name: 'Kevin Mouko', deals: 15, target: '95%', color: 'bg-green-500' },
+            ].map((agent) => (
+              <div key={agent.name} className="flex items-center justify-between group cursor-pointer">
+                <div className="flex items-center gap-4">
+                  <div className={`w-12 h-12 ${agent.color} rounded-2xl flex items-center justify-center text-white font-bold`}>
+                    {agent.name.split(' ').map(n => n[0]).join('')}
                   </div>
                   <div>
-                    <h4 className="font-black text-gray-900 group-hover:text-primary transition-colors">{op.name}</h4>
-                    <p className="text-sm text-gray-400 font-medium">{op.manager} • <span className="text-primary/60">{op.type}</span></p>
+                    <p className="font-bold text-foreground group-hover:text-primary transition-colors">{agent.name}</p>
+                    <p className="text-xs text-subtext">{agent.deals} nouveaux opérateurs ce mois</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-1 text-xs text-gray-400 font-bold mr-4">
-                    <Clock className="w-3.5 h-3.5" />
-                    {op.date}
+                <div className="text-right">
+                  <p className="text-sm font-black text-foreground">{agent.target}</p>
+                  <div className="w-16 h-1.5 bg-gray-100 rounded-full mt-1 overflow-hidden">
+                    <div className={`${agent.color} h-full`} style={{ width: agent.target }}></div>
                   </div>
-                  <button className="p-3 bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm">
-                    <XCircle className="w-5 h-5" />
-                  </button>
-                  <button className="p-3 bg-green-50 text-green-600 rounded-xl hover:bg-green-600 hover:text-white transition-all shadow-sm">
-                    <CheckCircle2 className="w-5 h-5" />
-                  </button>
                 </div>
               </div>
             ))}
           </div>
         </div>
-
-        {/* Activity Feed / Alerts */}
-        <div className="bg-[#1A1A1A] p-8 rounded-[40px] text-white shadow-2xl space-y-8">
-           <h3 className="font-black text-xl">Alertes Système</h3>
-           <div className="space-y-6">
-              {[
-                { title: 'Revenus records', text: 'La barre des 4M FCFA a été dépassée ce mois-ci.', icon: TrendingUp, color: 'text-green-400' },
-                { title: 'Pic de trafic', text: '500 nouveaux utilisateurs inscrits aujourd\'hui.', icon: Users, color: 'text-blue-400' },
-                { title: 'Maintenance', text: 'Mise à jour du serveur prévue à 02:00.', icon: Clock, color: 'text-orange-400' },
-              ].map((alert, i) => (
-                <div key={i} className="flex gap-4">
-                  <div className={`mt-1 ${alert.color}`}>
-                    <alert.icon className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h5 className="font-bold text-sm">{alert.title}</h5>
-                    <p className="text-xs text-white/40 font-medium leading-relaxed">{alert.text}</p>
-                  </div>
-                </div>
-              ))}
-           </div>
-           <button className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl font-bold text-sm hover:bg-white/10 transition-all">
-             Accéder aux logs complets
-           </button>
-        </div>
       </div>
     </div>
+  );
+}
+
+function Building2Icon(props: any) {
+  return (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
+  );
+}
+
+function PlusIcon(props: any) {
+  return (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
   );
 }
