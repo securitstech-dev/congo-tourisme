@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Chatbot from "@/components/Chatbot";
+import Footer from "@/components/layout/footer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -13,8 +14,6 @@ export const metadata: Metadata = {
   title: "Congo Tourisme | Découvrez la République du Congo",
   description: "Plateforme SaaS de tourisme national — Découvrez les merveilles de la République du Congo.",
 };
-
-import Footer from "@/components/layout/footer";
 
 export default function RootLayout({
   children,
