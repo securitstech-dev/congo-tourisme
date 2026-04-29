@@ -12,6 +12,9 @@
     "react": ">=18",
     "react-dom": ">=18"
   },
+  "scripts": {
+    "build": "echo 'No UI build needed'"
+  },
   "devDependencies": {
     "@types/react": "latest",
     "typescript": "latest"
