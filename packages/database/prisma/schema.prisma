@@ -1,0 +1,230 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Utilisateurs (tous rôles confondus)
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String?
+  firstName     String
+  lastName      String
+  phone         String?
+  role          UserRole  @default(TOURIST)
+  avatarUrl     String?
+  isVerified    Boolean   @default(false)
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime? // soft delete
+  operator      Operator?
+  reservations  Reservation[]
+  reviews       Review[]
+  refreshTokens RefreshToken[]
+}
+
+enum UserRole {
+  ADMIN
+  OPERATOR
+  TOURIST
+}
+
+// Profil étendu pour les opérateurs
+model Operator {
+  id                String           @id @default(cuid())
+  userId            String           @unique
+  user              User             @relation(fields: [userId], references: [id])
+  businessName      String
+  businessType      BusinessType
+  description       String           @db.Text
+  logoUrl           String?
+  coverImageUrl     String?
+  region            String           // Brazzaville, Pointe-Noire, Dolisie, Nord Congo...
+  city              String
+  address           String
+  latitude          Float?
+  longitude         Float?
+  phone             String
+  whatsapp          String?
+  website           String?
+  isValidated       Boolean          @default(false) // Admin doit valider
+  validatedAt       DateTime?
+  subscriptionPlan  SubscriptionPlan @default(STARTER)
+  subscriptionEnd   DateTime?
+  listings          Listing[]
+  reservations      Reservation[]
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+}
+
+enum BusinessType {
+  HOTEL
+  RESTAURANT
+  CASINO
+  EVENT_HALL
+  TOURIST_SITE
+  TRAVEL_AGENCY
+  BAR_NIGHTCLUB
+  SPA_WELLNESS
+  LODGE_CAMP
+  OTHER
+}
+
+enum SubscriptionPlan {
+  STARTER
+  PROFESSIONAL
+  PREMIUM
+}
+
+// Offres publiées par les opérateurs
+model Listing {
+  id            String         @id @default(cuid())
+  operatorId    String
+  operator      Operator       @relation(fields: [operatorId], references: [id])
+  title         String
+  description   String         @db.Text
+  listingType   ListingType
+  pricePerNight Float?         // Pour les hôtels
+  pricePerPerson Float?        // Pour les excursions / restaurants
+  priceFlatRate Float?         // Pour les salles de fête / casinos
+  currency      String         @default("XAF") // Franc CFA
+  capacity      Int?
+  isAvailable   Boolean        @default(true)
+  isFeatured    Boolean        @default(false) // Mis en avant par Admin
+  images        ListingImage[]
+  amenities     String[]       // ["wifi", "piscine", "climatisation"...]
+  checkInTime   String?        // "14:00"
+  checkOutTime  String?        // "11:00"
+  minNights     Int?           @default(1)
+  rating        Float?         @default(0)
+  reviewCount   Int            @default(0)
+  reservations  Reservation[]
+  reviews       Review[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  deletedAt     DateTime?
+}
+
+enum ListingType {
+  HOTEL_ROOM
+  HOTEL_SUITE
+  RESTAURANT_TABLE
+  EXCURSION
+  EVENT_HALL_RENTAL
+  CASINO_PACKAGE
+  SPA_SERVICE
+  TOURIST_SITE_VISIT
+}
+
+model ListingImage {
+  id           String   @id @default(cuid())
+  listingId    String
+  listing      Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  url          String
+  cloudinaryId String
+  altText      String?
+  order        Int      @default(0)
+  createdAt    DateTime @default(now())
+}
+
+// Réservations
+model Reservation {
+  id               String            @id @default(cuid())
+  listingId        String
+  listing          Listing           @relation(fields: [listingId], references: [id])
+  touristId        String
+  tourist          User              @relation(fields: [touristId], references: [id])
+  operatorId       String
+  operator         Operator          @relation(fields: [operatorId], references: [id])
+  checkIn          DateTime
+  checkOut         DateTime?
+  guests           Int               @default(1)
+  totalPrice       Float
+  currency         String            @default("XAF")
+  status           ReservationStatus @default(PENDING)
+  paymentStatus    PaymentStatus     @default(UNPAID)
+  stripePaymentId  String?
+  notes            String?           @db.Text
+  cancellationReason String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  payment          Payment?
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  REJECTED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+// Paiements
+model Payment {
+  id              String        @id @default(cuid())
+  reservationId   String        @unique
+  reservation     Reservation   @relation(fields: [reservationId], references: [id])
+  amount          Float
+  currency        String
+  method          PaymentMethod
+  stripePaymentId String?
+  mobileMoneyRef  String?
+  status          String
+  paidAt          DateTime?
+  createdAt       DateTime      @default(now())
+}
+
+enum PaymentMethod {
+  STRIPE
+  MOBILE_MONEY_MTN
+  MOBILE_MONEY_AIRTEL
+}
+
+// Avis et notations
+model Review {
+  id        String   @id @default(cuid())
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id])
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  rating    Int      // 1 à 5
+  comment   String   @db.Text
+  isVisible Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+// Abonnements opérateurs
+model Subscription {
+  id          String           @id @default(cuid())
+  operatorId  String
+  plan        SubscriptionPlan
+  amount      Float
+  currency    String           @default("XAF")
+  startDate   DateTime
+  endDate     DateTime
+  isActive    Boolean          @default(true)
+  stripeSubId String?
+  createdAt   DateTime         @default(now())
+}
+
+// Tokens de refresh JWT
+model RefreshToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
