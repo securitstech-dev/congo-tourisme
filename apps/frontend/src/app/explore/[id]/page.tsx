@@ -54,16 +54,16 @@ export default function ListingDetailsPage() {
       <div className="min-h-screen flex flex-col items-center justify-center bg-white gap-6">
         <p className="text-xl font-bold text-subtext">Annonce introuvable</p>
         <Link href="/explore" className="bg-primary text-white px-8 py-3 rounded-2xl font-bold">
-          Retour  l'exploration
+          Retour à l'exploration
         </Link>
       </div>
     );
   }
 
   const amenities = [
-    { icon: Wifi, label: 'Wi-Fi haut dbit' },
+    { icon: Wifi, label: 'Wi-Fi haut débit' },
     { icon: Wind, label: 'Climatisation' },
-    { icon: Coffee, label: 'Petit-djuner inclus' },
+    { icon: Coffee, label: 'Petit-déjeuner inclus' },
     { icon: Tv, label: 'Smart TV' },
   ];
 
@@ -133,7 +133,7 @@ export default function ListingDetailsPage() {
 
           {/* About */}
           <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-foreground"> propos de ce lieu</h2>
+            <h2 className="text-2xl font-bold text-foreground">À propos de ce lieu</h2>
             <p className="text-lg text-subtext leading-relaxed">
               {listing.description}
             </p>
@@ -162,7 +162,7 @@ export default function ListingDetailsPage() {
             <div className="h-[300px] bg-accent/20 rounded-3xl overflow-hidden relative border border-gray-100">
                <div className="absolute inset-0 flex items-center justify-center text-subtext/40 flex-col gap-4">
                  <MapPin className="w-12 h-12 opacity-20" />
-                 <p className="font-bold">Carte interactive bientt disponible (Leaflet)</p>
+                 <p className="font-bold">Carte interactive bientôt disponible (Leaflet)</p>
                </div>
             </div>
           </div>
@@ -185,11 +185,11 @@ export default function ListingDetailsPage() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-0 border border-gray-100 rounded-3xl overflow-hidden">
                 <div className="p-4 border-r border-gray-100 bg-accent/10">
-                   <p className="text-[10px] font-bold text-subtext uppercase tracking-widest">Arrive</p>
+                   <p className="text-[10px] font-bold text-subtext uppercase tracking-widest">Arrivée</p>
                    <p className="font-bold text-sm">Ajouter date</p>
                 </div>
                 <div className="p-4 bg-accent/10">
-                   <p className="text-[10px] font-bold text-subtext uppercase tracking-widest">Dpart</p>
+                   <p className="text-[10px] font-bold text-subtext uppercase tracking-widest">Départ</p>
                    <p className="font-bold text-sm">Ajouter date</p>
                 </div>
               </div>
@@ -205,7 +205,7 @@ export default function ListingDetailsPage() {
             </button>
 
             <p className="text-center text-xs text-subtext font-medium italic">
-              Vous ne serez pas encore dbit
+              Vous ne serez pas encore débité
             </p>
 
             <div className="pt-6 border-t border-gray-50 flex items-center gap-4">
@@ -213,7 +213,7 @@ export default function ListingDetailsPage() {
                  <CheckCircle2 className="w-6 h-6" />
                </div>
                <p className="text-xs text-subtext font-bold leading-relaxed">
-                 Cette offre est vrifie par Securits Tech pour garantir votre scurit.
+                 Cette offre est vérifiée par Securits Tech pour garantir votre sécurité.
                </p>
             </div>
           </div>

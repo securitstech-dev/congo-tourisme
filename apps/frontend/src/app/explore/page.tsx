@@ -35,9 +35,9 @@ export default function ExplorePage() {
   }, []);
 
   const categories = [
-    { icon: Hotel, label: 'Hbergements' },
+    { icon: Hotel, label: 'Hébergements' },
     { icon: Utensils, label: 'Restaurants' },
-    { icon: MapIcon, label: 'Expriences' },
+    { icon: MapIcon, label: 'Expériences' },
   ];
 
   return (
@@ -49,7 +49,7 @@ export default function ExplorePage() {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-subtext/40" />
             <input 
               type="text" 
-              placeholder="O voulez-vous aller ?" 
+              placeholder="Où voulez-vous aller ?" 
               className="w-full pl-12 pr-4 py-3 bg-accent/20 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 text-sm font-medium"
             />
           </div>
@@ -105,7 +105,7 @@ export default function ExplorePage() {
                     <input type="checkbox" className="w-5 h-5 rounded-lg border-gray-200 text-primary focus:ring-primary" />
                     <div className="flex items-center gap-1">
                       <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                      <span className="text-sm font-medium text-subtext group-hover:text-primary">{star}+ etoiles</span>
+                      <span className="text-sm font-medium text-subtext group-hover:text-primary">{star}+ étoiles</span>
                     </div>
                   </label>
                 ))}
@@ -126,7 +126,7 @@ export default function ExplorePage() {
               <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-accent/20">
                 <MapIcon className="text-primary w-12 h-12 opacity-20" />
               </div>
-              <h2 className="text-2xl font-bold text-foreground mb-2">Aucune offre trouve</h2>
+              <h2 className="text-2xl font-bold text-foreground mb-2">Aucune offre trouvée</h2>
               <p className="text-subtext">Essayez d'ajuster vos filtres ou revenez plus tard.</p>
             </div>
           ) : (
@@ -162,7 +162,7 @@ export default function ExplorePage() {
                         <p className="text-2xl font-black text-primary">{item.price.toLocaleString()} <span className="text-xs font-bold">FCFA</span></p>
                       </div>
                       <button className="bg-accent text-primary px-6 py-3 rounded-2xl font-bold hover:bg-primary hover:text-white transition-all shadow-sm">
-                        Dcouvrir
+                        Découvrir
                       </button>
                     </div>
                   </div>

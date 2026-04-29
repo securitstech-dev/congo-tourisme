@@ -26,7 +26,7 @@ export default function OperatorListingsPage() {
         const response = await api.get('/listings/my-listings');
         setListings(response.data);
       } catch (error) {
-        console.error('Erreur lors de la rcupration des annonces:', error);
+        console.error('Erreur lors de la récupération des annonces:', error);
       } finally {
         setIsLoading(false);
       }
@@ -40,7 +40,7 @@ export default function OperatorListingsPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Mes Annonces</h1>
-          <p className="text-subtext">Grez vos offres et leur visibilit sur la plateforme.</p>
+          <p className="text-subtext">Gérez vos offres et leur visibilité sur la plateforme.</p>
         </div>
         <Link href="/dashboard/operator/listings/new" className="bg-primary text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:opacity-90 transition-all shadow-lg shadow-primary/20">
           <Plus className="w-5 h-5" />
@@ -60,7 +60,7 @@ export default function OperatorListingsPage() {
         </div>
         <select className="w-full md:w-48 py-3 px-4 bg-accent/20 border-none rounded-xl focus:ring-2 focus:ring-primary/20 text-sm font-medium cursor-pointer">
           <option>Tous les types</option>
-          <option>Htels</option>
+          <option>Hôtels</option>
           <option>Restaurants</option>
           <option>Sites</option>
         </select>
@@ -78,9 +78,9 @@ export default function OperatorListingsPage() {
             <Hotel className="text-primary w-10 h-10" />
           </div>
           <h2 className="text-xl font-bold text-foreground mb-2">Aucune annonce pour le moment</h2>
-          <p className="text-subtext mb-8">Commencez par ajouter votre premier tablissement sur Congo Tourisme.</p>
+          <p className="text-subtext mb-8">Commencez par ajouter votre premier établissement sur Congo Tourisme.</p>
           <Link href="/dashboard/operator/listings/new" className="bg-primary text-white px-8 py-3 rounded-xl font-bold hover:opacity-90 transition-all">
-            Crer ma premire annonce
+            Créer ma première annonce
           </Link>
         </div>
       ) : (
@@ -128,7 +128,7 @@ export default function OperatorListingsPage() {
                   </button>
                   <button className="flex items-center justify-center gap-2 py-2 bg-accent/30 text-secondary rounded-xl font-bold text-sm hover:bg-secondary hover:text-white transition-all">
                     <Edit2 className="w-4 h-4" />
-                    Editer
+                    Éditer
                   </button>
                 </div>
               </div>

@@ -28,7 +28,7 @@ export default function OperatorLayout({
   useEffect(() => {
     setMounted(true);
     if (!isAuthenticated || user?.role !== 'OPERATOR') {
-      // router.push('/auth/login'); // Commente pour le dev si besoin de voir sans login
+      // router.push('/auth/login'); // Commenté pour le dev si besoin de voir sans login
     }
   }, [isAuthenticated, user, router]);
 

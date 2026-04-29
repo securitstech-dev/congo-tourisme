@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { z } from 'zod';
 import { 
   ArrowLeft, 
   Upload, 
@@ -21,11 +21,11 @@ import Link from 'next/link';
 import api from '@/lib/api';
 
 const listingSchema = z.object({
-  title: z.string().min(5, 'Le titre doit faire au moins 5 caractres'),
-  description: z.string().min(20, 'La description doit faire au moins 20 caractres'),
+  title: z.string().min(5, 'Le titre doit faire au moins 5 caractères'),
+  description: z.string().min(20, 'La description doit faire au moins 20 caractères'),
   type: z.enum(['HOTEL', 'RESTAURANT', 'SITE', 'AGENCY', 'OTHER']),
   location: z.string().min(3, 'La localisation est requise'),
-  price: z.preprocess((val) => Number(val), z.number().min(0, 'Le prix doit tre positif')),
+  price: z.number().min(0, 'Le prix doit être positif'),
 });
 
 type ListingFormValues = z.infer<typeof listingSchema>;
@@ -36,9 +36,10 @@ export default function NewListingPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const { register, handleSubmit, formState: { errors }, watch } = useForm<ListingFormValues>({
-    resolver: zodResolver(listingSchema),
+    resolver: zodResolver(listingSchema) as any,
     defaultValues: {
       type: 'HOTEL',
+      price: 0
     }
   });
 
@@ -48,8 +49,8 @@ export default function NewListingPage() {
       await api.post('/listings', data);
       router.push('/dashboard/operator/listings');
     } catch (error) {
-      console.error('Erreur lors de la cration:', error);
-      alert('Une erreur est survenue lors de la cration de l\'annonce.');
+      console.error('Erreur lors de la création:', error);
+      alert('Une erreur est survenue lors de la création de l\'annonce.');
     } finally {
       setIsLoading(false);
     }
@@ -74,7 +75,7 @@ export default function NewListingPage() {
 
       <div>
         <h1 className="text-3xl font-bold text-foreground mb-2">Ajouter une nouvelle annonce</h1>
-        <p className="text-subtext">Crez une offre attractive pour attirer plus de voyageurs.</p>
+        <p className="text-subtext">Créez une offre attractive pour attirer plus de voyageurs.</p>
       </div>
 
       <div className="bg-white p-4 rounded-3xl border border-gray-100 shadow-sm flex items-center justify-between px-8">
@@ -116,7 +117,7 @@ export default function NewListingPage() {
                 {...register('type')}
                 className="w-full px-6 py-4 bg-accent/20 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 font-medium cursor-pointer"
               >
-                <option value="HOTEL">Htel / Lodge</option>
+                <option value="HOTEL">Hôtel / Lodge</option>
                 <option value="RESTAURANT">Restaurant / Bar</option>
                 <option value="SITE">Site Touristique</option>
                 <option value="AGENCY">Agence de voyage</option>
@@ -124,11 +125,11 @@ export default function NewListingPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-bold text-subtext ml-1">Description dtaille</label>
+              <label className="text-sm font-bold text-subtext ml-1">Description détaillée</label>
               <textarea 
                 {...register('description')}
                 rows={6}
-                placeholder="Dcrivez les points forts de votre offre..."
+                placeholder="Décrivez les points forts de votre offre..."
                 className="w-full px-6 py-4 bg-accent/20 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 font-medium resize-none"
               ></textarea>
               {errors.description && <p className="text-red-500 text-xs mt-1 ml-1">{errors.description.message}</p>}
@@ -139,7 +140,7 @@ export default function NewListingPage() {
         {/* Step 2 */}
         {currentStep === 2 && (
           <div className="p-8 space-y-6">
-            <h2 className="text-xl font-bold text-foreground">O de trouve votre offre et quel est son prix ?</h2>
+            <h2 className="text-xl font-bold text-foreground">Où se trouve votre offre et quel est son prix ?</h2>
             
             <div className="space-y-2">
               <label className="text-sm font-bold text-subtext ml-1">Localisation (Ville, Quartier)</label>
@@ -148,7 +149,7 @@ export default function NewListingPage() {
                 <input 
                   {...register('location')}
                   type="text" 
-                  placeholder="Ex: Pointe-Noire, Cte Sauvage"
+                  placeholder="Ex: Pointe-Noire, Côte Sauvage"
                   className="w-full pl-16 pr-6 py-4 bg-accent/20 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 font-medium"
                 />
               </div>
@@ -160,7 +161,7 @@ export default function NewListingPage() {
               <div className="relative">
                 <Tag className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-subtext/40" />
                 <input 
-                  {...register('price')}
+                  {...register('price', { valueAsNumber: true })}
                   type="number" 
                   placeholder="0"
                   className="w-full pl-16 pr-6 py-4 bg-accent/20 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 font-bold text-primary text-xl"
@@ -175,7 +176,7 @@ export default function NewListingPage() {
         {currentStep === 3 && (
           <div className="p-8 space-y-6">
             <h2 className="text-xl font-bold text-foreground">Finalisez votre annonce</h2>
-            <p className="text-subtext">Vrifiez vos informations avant de publier.</p>
+            <p className="text-subtext">Vérifiez vos informations avant de publier.</p>
             
             <div className="bg-accent/10 p-6 rounded-2xl space-y-4">
               <div className="flex justify-between border-b border-white pb-2">
@@ -194,7 +195,7 @@ export default function NewListingPage() {
 
             <div className="border-4 border-dashed border-accent/40 rounded-3xl p-12 flex flex-col items-center justify-center text-center">
               <ImageIcon className="text-primary w-10 h-10 mb-4 opacity-40" />
-              <p className="text-sm text-subtext">L'upload d'images Cloudinary sera configur lors de la prochaine tape.</p>
+              <p className="text-sm text-subtext">L'upload d'images Cloudinary sera configuré lors de la prochaine étape.</p>
             </div>
           </div>
         )}
@@ -206,7 +207,7 @@ export default function NewListingPage() {
             disabled={currentStep === 1 || isLoading}
             className="px-8 py-3 text-subtext font-bold hover:text-foreground transition-colors disabled:opacity-30"
           >
-            Prcdent
+            Précédent
           </button>
           
           {currentStep < 3 ? (
