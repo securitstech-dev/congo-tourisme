@@ -11,7 +11,7 @@
     "build": "turbo run build",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "vercel-build": "cd packages/database && npx prisma generate && cd ../.. && turbo run build"
+    "vercel-build": "cd apps/frontend && npm run build"
   },
   "devDependencies": {
     "prisma": "^7.8.0",
