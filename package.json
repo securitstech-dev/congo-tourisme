@@ -1,6 +1,7 @@
 {
   "name": "congo-tourisme",
   "private": true,
+  "packageManager": "npm@11.1.0",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -9,9 +10,14 @@
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
-    "test": "turbo run test"
+    "test": "turbo run test",
+    "vercel-build": "prisma generate --schema=packages/database/prisma/schema.prisma && turbo run build"
   },
   "devDependencies": {
+    "prisma": "^6.2.1",
     "turbo": "latest"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.2.1"
   }
 }
