@@ -1,4 +1,7 @@
+'use client';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import api from '@/lib/api';
 import { 
   ArrowRight, 
   Search, 
@@ -8,15 +11,34 @@ import {
   Globe, 
   Star,
   CheckCircle2,
-  Play
+  Play,
+  Loader2,
+  Tag
 } from 'lucide-react';
 
 export default function HomePage() {
+  const [listings, setListings] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   const featuredDestinations = [
     { title: 'Pointe-Noire', sub: 'La Côte Sauvage', img: 'https://images.unsplash.com/photo-1518005020251-58296d19119d?q=80&w=800' },
     { title: 'Odzala-Kokoua', sub: 'Parc National', img: 'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?q=80&w=800' },
     { title: 'Brazzaville', sub: 'La Verte', img: 'https://images.unsplash.com/photo-1493246507139-91e8bef99c02?q=80&w=800' },
   ];
+
+  useEffect(() => {
+    const fetchListings = async () => {
+      try {
+        const res = await api.get('/listings');
+        setListings(res.data.slice(0, 4));
+      } catch (error) {
+        console.error('Failed to fetch listings:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchListings();
+  }, []);
 
   return (
     <div className="bg-background overflow-hidden">
@@ -122,6 +144,63 @@ export default function HomePage() {
               </div>
             </Link>
           ))}
+        </div>
+      </section>
+
+      {/* Popular Listings */}
+      <section className="py-32 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
+            <h2 className="text-4xl font-black tracking-tight">Offres <span className="text-primary">Populaires</span></h2>
+            <p className="text-subtext">Sélectionnées par nos experts pour votre prochain séjour au Congo.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {isLoading ? (
+              <div className="col-span-full py-20 flex justify-center"><Loader2 className="w-12 h-12 animate-spin text-primary" /></div>
+            ) : listings.length === 0 ? (
+              <div className="col-span-full py-20 text-center text-subtext font-bold text-xl">Aucune offre disponible pour le moment.</div>
+            ) : (
+              listings.map((listing) => (
+                <Link 
+                  key={listing.id} 
+                  href={`/explore/${listing.id}`}
+                  className="group bg-white rounded-[32px] overflow-hidden border border-gray-100 hover:shadow-2xl transition-all hover:-translate-y-2"
+                >
+                  <div className="relative h-64 overflow-hidden">
+                    <img 
+                      src={listing.images?.[0]?.url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=600'} 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      alt={listing.title}
+                    />
+                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-sm">
+                      <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" />
+                      <span className="text-xs font-bold text-foreground">4.9</span>
+                    </div>
+                  </div>
+                  <div className="p-6 space-y-4">
+                    <div className="flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-widest bg-primary/10 w-fit px-2 py-1 rounded-md">
+                      <Tag className="w-3 h-3" />
+                      {listing.listingType}
+                    </div>
+                    <h4 className="font-bold text-lg leading-snug group-hover:text-primary transition-colors">{listing.title}</h4>
+                    <div className="flex items-center text-subtext text-sm">
+                      <MapPin className="w-4 h-4 mr-1 text-primary" />
+                      {listing.operator?.city}
+                    </div>
+                    <div className="pt-2 border-t border-gray-50 flex items-center justify-between">
+                      <p className="text-lg font-black text-foreground">
+                        {(listing.pricePerNight || listing.pricePerPerson || listing.priceFlatRate || 0).toLocaleString()} <span className="text-xs text-subtext font-bold">FCFA</span>
+                      </p>
+                      <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
+                        <ArrowRight className="w-4 h-4" />
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))
+            )}
+          </div>
         </div>
       </section>
 

@@ -11,21 +11,32 @@ export class ListingsService {
   ) {}
 
   async create(userId: string, createListingDto: CreateListingDto) {
+    const { images, ...listingData } = createListingDto;
     let operator = await this.operatorsService.findByUserId(userId);
     
-    // Si l'utilisateur n'est pas encore enregistr comme oprateur dans la table Operator
     if (!operator) {
       operator = await this.operatorsService.create({
         userId,
-        businessName: 'Nouvel Établissement', // Valeur par dfaut  changer plus tard
+        businessName: 'Nouvel Établissement',
         businessType: 'OTHER',
+        description: 'À renseigner',
+        region: 'Pointe-Noire',
+        city: 'Pointe-Noire',
+        address: 'À renseigner',
+        phone: '000000000',
       });
     }
 
     return this.prisma.listing.create({
       data: {
-        ...createListingDto,
+        ...listingData,
         operatorId: operator.id,
+        images: images ? {
+          create: images.map(img => ({
+            url: img.url,
+            cloudinaryId: img.cloudinaryId,
+          }))
+        } : undefined
       },
     });
   }
@@ -58,7 +69,7 @@ export class ListingsService {
         images: true,
         operator: true,
         reviews: {
-          include: { user: true },
+          include: { author: true },
         },
       },
     });

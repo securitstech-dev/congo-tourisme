@@ -20,12 +20,21 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import api from '@/lib/api';
+import { useAuthStore } from '@/store/authStore';
 
 export default function ListingDetailsPage() {
   const { id } = useParams();
   const router = useRouter();
   const [listing, setListing] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { isAuthenticated } = useAuthStore();
+  const [isBooking, setIsBooking] = useState(false);
+  const [bookingData, setBookingData] = useState({
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: '',
+    adults: 1,
+    children: 0
+  });
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -40,6 +49,40 @@ export default function ListingDetailsPage() {
     };
     fetchListing();
   }, [id]);
+
+  const handleBooking = async () => {
+    if (!isAuthenticated) {
+      router.push(`/auth/login?redirect=/explore/${id}`);
+      return;
+    }
+
+    if (!bookingData.startDate) {
+      alert('Veuillez sélectionner une date de début.');
+      return;
+    }
+
+    setIsBooking(true);
+    try {
+      // Calcul du prix total (simplifié pour la démo)
+      const basePrice = listing.pricePerNight || listing.pricePerPerson || listing.priceFlatRate || 0;
+      
+      const response = await api.post('/bookings', {
+        listingId: id,
+        startDate: bookingData.startDate,
+        endDate: bookingData.endDate || null,
+        totalAmount: basePrice,
+        adults: bookingData.adults,
+        children: bookingData.children
+      });
+
+      router.push(`/booking/checkout?id=${response.data.id}`);
+    } catch (error) {
+      console.error('Erreur réservation:', error);
+      alert('Une erreur est survenue lors de la réservation.');
+    } finally {
+      setIsBooking(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -125,7 +168,7 @@ export default function ListingDetailsPage() {
             <h1 className="text-4xl font-black text-foreground leading-tight mb-4">{listing.title}</h1>
             <div className="flex items-center text-subtext text-lg font-medium">
               <MapPin className="w-6 h-6 mr-2 text-primary" />
-              {listing.location}
+              {listing.operator?.city}, {listing.operator?.region}
             </div>
           </div>
 
@@ -173,8 +216,12 @@ export default function ListingDetailsPage() {
           <div className="sticky top-32 bg-white rounded-[40px] border border-gray-100 shadow-2xl shadow-primary/10 p-8 space-y-8">
             <div className="flex items-end justify-between">
               <div>
-                <p className="text-3xl font-black text-primary">{listing.price.toLocaleString()} FCFA</p>
-                <p className="text-sm text-subtext font-bold">par nuit</p>
+                <p className="text-3xl font-black text-primary">
+                  {(listing.pricePerNight || listing.pricePerPerson || listing.priceFlatRate || 0).toLocaleString()} FCFA
+                </p>
+                <p className="text-sm text-subtext font-bold">
+                  {listing.pricePerNight ? 'par nuit' : listing.pricePerPerson ? 'par personne' : 'forfait'}
+                </p>
               </div>
               <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-lg">
                 <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
@@ -186,22 +233,52 @@ export default function ListingDetailsPage() {
               <div className="grid grid-cols-2 gap-0 border border-gray-100 rounded-3xl overflow-hidden">
                 <div className="p-4 border-r border-gray-100 bg-accent/10">
                    <p className="text-[10px] font-bold text-subtext uppercase tracking-widest">Arrivée</p>
-                   <p className="font-bold text-sm">Ajouter date</p>
+                   <input 
+                     type="date" 
+                     className="bg-transparent font-bold text-xs w-full focus:outline-none"
+                     value={bookingData.startDate}
+                     onChange={(e) => setBookingData({...bookingData, startDate: e.target.value})}
+                   />
                 </div>
                 <div className="p-4 bg-accent/10">
                    <p className="text-[10px] font-bold text-subtext uppercase tracking-widest">Départ</p>
-                   <p className="font-bold text-sm">Ajouter date</p>
+                   <input 
+                     type="date" 
+                     className="bg-transparent font-bold text-xs w-full focus:outline-none"
+                     value={bookingData.endDate}
+                     onChange={(e) => setBookingData({...bookingData, endDate: e.target.value})}
+                   />
                 </div>
               </div>
-              <div className="p-4 border border-gray-100 rounded-3xl bg-accent/10">
-                 <p className="text-[10px] font-bold text-subtext uppercase tracking-widest">Voyageurs</p>
-                 <p className="font-bold text-sm">1 voyageur</p>
+              <div className="p-4 border border-gray-100 rounded-3xl bg-accent/10 flex items-center justify-between">
+                 <div>
+                   <p className="text-[10px] font-bold text-subtext uppercase tracking-widest">Voyageurs</p>
+                   <p className="font-bold text-sm">{bookingData.adults} Adulte{bookingData.adults > 1 ? 's' : ''}</p>
+                 </div>
+                 <div className="flex items-center gap-2">
+                    <button 
+                      onClick={() => setBookingData({...bookingData, adults: Math.max(1, bookingData.adults - 1)})}
+                      className="w-8 h-8 rounded-full bg-white flex items-center justify-center font-bold shadow-sm"
+                    >-</button>
+                    <button 
+                      onClick={() => setBookingData({...bookingData, adults: bookingData.adults + 1})}
+                      className="w-8 h-8 rounded-full bg-white flex items-center justify-center font-bold shadow-sm"
+                    >+</button>
+                 </div>
               </div>
             </div>
 
-            <button className="w-full bg-primary text-white py-5 rounded-3xl font-bold text-lg shadow-xl shadow-primary/30 hover:scale-[1.02] transition-all flex items-center justify-center gap-3">
-              Réserver maintenant
-              <ChevronRight className="w-6 h-6" />
+            <button 
+              onClick={handleBooking}
+              disabled={isBooking}
+              className="w-full bg-primary text-white py-5 rounded-3xl font-bold text-lg shadow-xl shadow-primary/30 hover:scale-[1.02] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+            >
+              {isBooking ? <Loader2 className="w-6 h-6 animate-spin" /> : (
+                <>
+                  Réserver maintenant
+                  <ChevronRight className="w-6 h-6" />
+                </>
+              )}
             </button>
 
             <p className="text-center text-xs text-subtext font-medium italic">

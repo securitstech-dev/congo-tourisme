@@ -6,22 +6,46 @@ import {
   TrendingUp, 
   Calendar,
   ChevronRight,
-  Plus
+  Plus,
+  Loader2
 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import api from '@/lib/api';
+import Link from 'next/link';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
 
 export default function OperatorDashboard() {
-  const stats = [
-    { label: 'Revenus du mois', value: '1.250.000 FCFA', icon: CreditCard, color: 'text-green-600', bg: 'bg-green-50' },
-    { label: 'Réservations actives', value: '24', icon: Calendar, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { label: 'Visiteurs uniques', value: '1,450', icon: Users, color: 'text-purple-600', bg: 'bg-purple-50' },
-    { label: 'Taux de conversion', value: '4.2%', icon: TrendingUp, color: 'text-orange-600', bg: 'bg-orange-50' },
-  ];
+  const [stats, setStats] = useState<any[]>([]);
+  const [bookings, setBookings] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const recentBookings = [
-    { id: 1, user: 'Arnaud Makosso', listing: 'Suite Royale - Grand Hotel', date: '28 Avril 2026', amount: '150.000 FCFA', status: 'Payé' },
-    { id: 2, user: 'Sarah Kimpolo', listing: 'Table 4 pers - Mami Wata', date: '27 Avril 2026', amount: '45.000 FCFA', status: 'En attente' },
-    { id: 3, user: 'Jean Mviri', listing: 'Excursion Gorges de Diosso', date: '27 Avril 2026', amount: '25.000 FCFA', status: 'Payé' },
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [statsRes, bookingsRes] = await Promise.all([
+          api.get('/operators/stats'),
+          api.get('/bookings/operator')
+        ]);
+
+        const statsData = [
+          { label: 'Revenus du mois', value: `${statsRes.data.revenue.toLocaleString()} FCFA`, icon: CreditCard, color: 'text-green-600', bg: 'bg-green-50' },
+          { label: 'Réservations actives', value: statsRes.data.bookings.toString(), icon: Calendar, color: 'text-blue-600', bg: 'bg-blue-50' },
+          { label: 'Visiteurs uniques', value: statsRes.data.visitors.toLocaleString(), icon: Users, color: 'text-purple-600', bg: 'bg-purple-50' },
+          { label: 'Taux de conversion', value: `${statsRes.data.conversion}%`, icon: TrendingUp, color: 'text-orange-600', bg: 'bg-orange-50' },
+        ];
+
+        setStats(statsData);
+        setBookings(bookingsRes.data);
+      } catch (error) {
+        console.error('Erreur lors du chargement du dashboard:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <div className="space-y-8">
@@ -31,10 +55,13 @@ export default function OperatorDashboard() {
           <h1 className="text-2xl font-bold text-foreground">Bienvenue, Opérateur</h1>
           <p className="text-subtext">Voici ce qui se passe dans votre établissement aujourd'hui.</p>
         </div>
-        <button className="bg-primary text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:opacity-90 transition-all shadow-lg shadow-primary/20">
+        <Link 
+          href="/dashboard/operator/listings/new"
+          className="bg-primary text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:opacity-90 transition-all shadow-lg shadow-primary/20"
+        >
           <Plus className="w-5 h-5" />
           Nouvelle Annonce
-        </button>
+        </Link>
       </div>
 
       {/* Stats Grid */}
@@ -72,23 +99,37 @@ export default function OperatorDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {recentBookings.map((booking) => (
-                  <tr key={booking.id} className="hover:bg-accent/5 transition-colors">
-                    <td className="px-6 py-4">
-                      <p className="font-bold text-foreground text-sm">{booking.user}</p>
-                      <p className="text-xs text-subtext">{booking.date}</p>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-foreground font-medium">{booking.listing}</td>
-                    <td className="px-6 py-4 text-sm font-bold text-foreground">{booking.amount}</td>
-                    <td className="px-6 py-4">
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                        booking.status === 'Payé' ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'
-                      }`}>
-                        {booking.status}
-                      </span>
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-10 text-center">
+                      <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto" />
                     </td>
                   </tr>
-                ))}
+                ) : bookings.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-10 text-center text-subtext">
+                      Aucune réservation récente.
+                    </td>
+                  </tr>
+                ) : (
+                  bookings.map((booking) => (
+                    <tr key={booking.id} className="hover:bg-accent/5 transition-colors">
+                      <td className="px-6 py-4">
+                        <p className="font-bold text-foreground text-sm">{booking.tourist?.firstName} {booking.tourist?.lastName}</p>
+                        <p className="text-xs text-subtext">{format(new Date(booking.createdAt), 'dd MMMM yyyy', { locale: fr })}</p>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-foreground font-medium">{booking.listing?.title}</td>
+                      <td className="px-6 py-4 text-sm font-bold text-foreground">{booking.totalPrice.toLocaleString()} FCFA</td>
+                      <td className="px-6 py-4">
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                          booking.paymentStatus === 'PAID' ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'
+                        }`}>
+                          {booking.paymentStatus === 'PAID' ? 'Payé' : 'En attente'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

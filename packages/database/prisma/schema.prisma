@@ -119,7 +119,12 @@ enum ListingType {
   CASINO_PACKAGE
   SPA_SERVICE
   TOURIST_SITE_VISIT
+  NIGHTCLUB_ENTRY
+  LEISURE_ACTIVITY
+  KERMESSE
+  SPECIAL_OFFER
 }
+
 
 model ListingImage {
   id           String   @id @default(cuid())

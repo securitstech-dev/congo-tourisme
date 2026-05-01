@@ -5,11 +5,14 @@ import * as bcrypt from 'bcrypt';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 
+import { MailService } from '../common/mail/mail.service';
+
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private mailService: MailService,
   ) {}
 
   async register(registerDto: RegisterDto) {
@@ -21,13 +24,15 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(registerDto.password, 12);
     const user = await this.usersService.create({
       email: registerDto.email,
-      password: hashedPassword,
+      passwordHash: hashedPassword,
       firstName: registerDto.firstName,
       lastName: registerDto.lastName,
       role: registerDto.role || 'TOURIST',
     });
 
-    const { password, ...result } = user;
+    await this.mailService.sendWelcomeEmail(user.email, user.firstName);
+
+    const { passwordHash, ...result } = user;
     return {
       user: result,
       backend_tokens: await this.generateTokens(user.id, user.email),
@@ -40,12 +45,12 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
+    const isPasswordValid = await bcrypt.compare(loginDto.password, user.passwordHash || '');
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const { password, ...result } = user;
+    const { passwordHash, ...result } = user;
     return {
       user: result,
       backend_tokens: await this.generateTokens(user.id, user.email),

@@ -10,8 +10,8 @@ export class CloudinaryService {
   ): Promise<UploadApiResponse | UploadApiErrorResponse> {
     return new Promise((resolve, reject) => {
       const upload = cloudinary.uploader.upload_stream((error, result) => {
-        if (error) return reject(error);
-        resolve(result);
+        if (error || !result) return reject(error || new Error('Upload failed'));
+        resolve(result as any);
       });
 
       toStream(file.buffer).pipe(upload);

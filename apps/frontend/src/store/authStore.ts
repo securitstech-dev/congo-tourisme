@@ -8,6 +8,11 @@ interface User {
   lastName: string;
   role: string;
   avatarUrl?: string;
+  operatorData?: {
+    isValidated: boolean;
+    subscriptionEnd: string | null;
+    subscriptionPlan: string;
+  };
 }
 
 interface AuthState {

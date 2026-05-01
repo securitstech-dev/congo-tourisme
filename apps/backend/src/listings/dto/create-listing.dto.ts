@@ -12,17 +12,29 @@ export class CreateListingDto {
 
   @IsEnum(ListingType)
   @IsNotEmpty()
-  type: ListingType;
-
-  @IsString()
-  @IsNotEmpty()
-  location: string;
+  listingType: ListingType;
 
   @IsNumber()
-  @IsNotEmpty()
-  price: number;
+  @IsOptional()
+  pricePerNight?: number;
+
+  @IsNumber()
+  @IsOptional()
+  pricePerPerson?: number;
+
+  @IsNumber()
+  @IsOptional()
+  priceFlatRate?: number;
+
+  @IsString()
+  @IsOptional()
+  currency?: string;
 
   @IsArray()
   @IsOptional()
   amenities?: string[];
+
+  @IsArray()
+  @IsOptional()
+  images?: { url: string; cloudinaryId: string }[];
 }

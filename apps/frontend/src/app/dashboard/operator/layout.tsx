@@ -102,7 +102,38 @@ export default function OperatorLayout({
         </header>
 
         {/* Page Body */}
-        <div className="flex-1 overflow-y-auto p-8">
+        <div className="flex-1 overflow-y-auto p-8 relative">
+          {(!user?.operatorData?.isValidated) && (
+            <div className="absolute inset-0 z-50 bg-white/80 backdrop-blur-md flex flex-col items-center justify-center">
+              <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md text-center border border-gray-100">
+                <div className="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <UserIcon className="w-8 h-8" />
+                </div>
+                <h2 className="text-xl font-bold text-foreground mb-2">Compte en attente de validation</h2>
+                <p className="text-subtext mb-6">Votre dossier est actuellement en cours d'examen par la direction de Securits Tech. Vous recevrez un email dès que votre compte sera activé.</p>
+                <Link href="/" className="bg-accent text-primary px-6 py-3 rounded-2xl font-bold hover:bg-primary hover:text-white transition-all">Retour à l'accueil</Link>
+              </div>
+            </div>
+          )}
+          
+          {(user?.operatorData?.isValidated && user?.operatorData?.subscriptionEnd && new Date(user.operatorData.subscriptionEnd) < new Date()) && (
+            <div className="absolute inset-0 z-50 bg-white/80 backdrop-blur-md flex flex-col items-center justify-center">
+              <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md text-center border border-gray-100">
+                <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Store className="w-8 h-8" />
+                </div>
+                <h2 className="text-xl font-bold text-foreground mb-2">Abonnement Expiré</h2>
+                <p className="text-subtext mb-6">Votre période d'essai ou d'abonnement est arrivée à terme. Pour continuer à publier et recevoir des réservations, veuillez renouveler votre abonnement.</p>
+                <div className="space-y-3">
+                  <button className="w-full bg-primary text-white px-6 py-3 rounded-2xl font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/30">
+                    Payer via Mobile Money
+                  </button>
+                  <p className="text-xs text-subtext">Ou rendez-vous à la direction pour un paiement en espèces.</p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {children}
         </div>
       </main>

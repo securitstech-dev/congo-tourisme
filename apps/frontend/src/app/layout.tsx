@@ -2,7 +2,8 @@ import React from 'react';
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Chatbot from "@/components/Chatbot";
+import Navbar from "@/components/layout/Navbar";
+import KongoChat from "@/components/chatbot/KongoChat";
 import Footer from "@/components/layout/footer";
 
 const inter = Inter({
@@ -26,11 +27,12 @@ export default function RootLayout({
       className={`${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
-        <main className="flex-grow">
+        <Navbar />
+        <main className="flex-grow pt-20">
           {children}
         </main>
         <Footer />
-        <Chatbot />
+        <KongoChat />
       </body>
     </html>
   );

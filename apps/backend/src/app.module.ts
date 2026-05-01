@@ -8,6 +8,9 @@ import { OperatorsModule } from './operators/operators.module';
 import { ListingsModule } from './listings/listings.module';
 import { BookingsModule } from './bookings/bookings.module';
 import { PaymentsModule } from './payments/payments.module';
+import { UploadsModule } from './uploads/uploads.module';
+import { AdminModule } from './admin/admin.module';
+import { MailModule } from './common/mail/mail.module';
 
 @Module({
   imports: [
@@ -22,6 +25,9 @@ import { PaymentsModule } from './payments/payments.module';
     ListingsModule,
     BookingsModule,
     PaymentsModule,
+    UploadsModule,
+    AdminModule,
+    MailModule,
   ],
   controllers: [],
   providers: [],

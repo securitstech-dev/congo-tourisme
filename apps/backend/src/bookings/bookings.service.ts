@@ -22,6 +22,7 @@ export class BookingsService {
         totalPrice: createBookingDto.totalAmount,
         checkIn: new Date(createBookingDto.startDate),
         checkOut: createBookingDto.endDate ? new Date(createBookingDto.endDate) : null,
+        guests: (createBookingDto.adults || 1) + (createBookingDto.children || 0),
         status: 'PENDING',
       },
     });
