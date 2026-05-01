@@ -112,7 +112,7 @@ export default function AdminRevenue() {
                       <span className={`px-3 py-1 rounded-full text-xs font-bold ${
                         trx.status === 'COMPLETED' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'
                       }`}>
-                        {trx.status}
+                        {trx.status === 'COMPLETED' ? 'Terminé' : 'En attente'}
                       </span>
                     </td>
                   </tr>

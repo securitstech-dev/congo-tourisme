@@ -39,7 +39,7 @@ export default function AdminLayout({
     { icon: Users, label: 'Opérateurs', href: '/dashboard/admin/operators' },
     { icon: FileCheck, label: 'Validations', href: '/dashboard/admin/validations' },
     { icon: Building2, label: 'Annonces', href: '/dashboard/admin/listings' },
-    { icon: BarChart3, label: 'Finance & Stats', href: '/dashboard/admin/stats' },
+    { icon: BarChart3, label: 'Finance & Stats', href: '/dashboard/admin/revenue' },
     { icon: Settings, label: 'Système', href: '/dashboard/admin/settings' },
   ];
 

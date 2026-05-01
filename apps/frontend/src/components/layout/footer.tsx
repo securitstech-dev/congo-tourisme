@@ -48,7 +48,7 @@ export default function Footer() {
               <li><Link href="/pricing" className="hover:text-primary transition-colors">Packs d'abonnement</Link></li>
               <li><Link href="/about" className="hover:text-primary transition-colors">À propos de nous</Link></li>
               <li><Link href="/contact" className="hover:text-primary transition-colors">Contact & Support</Link></li>
-              <li><Link href="/legal" className="hover:text-primary transition-colors">Mentions Légales</Link></li>
+              <li><Link href="/terms" className="hover:text-primary transition-colors">Mentions Légales</Link></li>
             </ul>
           </div>
 
@@ -91,7 +91,7 @@ export default function Footer() {
           <div className="flex gap-8">
             <Link href="/privacy" className="hover:text-white transition-colors">Vie privée</Link>
             <Link href="/terms" className="hover:text-white transition-colors">CGV / CGU</Link>
-            <Link href="/cookies" className="hover:text-white transition-colors">Cookies</Link>
+            <Link href="/contact" className="hover:text-white transition-colors">Cookies</Link>
           </div>
         </div>
       </div>

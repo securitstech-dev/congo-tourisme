@@ -84,9 +84,12 @@ export default function OperatorDashboard() {
         <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="p-6 border-b border-gray-100 flex items-center justify-between">
             <h3 className="font-bold text-foreground">Réservations récentes</h3>
-            <button className="text-primary text-sm font-bold flex items-center gap-1 hover:underline">
+            <Link 
+              href="/dashboard/operator/reservations" 
+              className="text-primary text-sm font-bold flex items-center gap-1 hover:underline"
+            >
               Tout voir <ChevronRight className="w-4 h-4" />
-            </button>
+            </Link>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left">

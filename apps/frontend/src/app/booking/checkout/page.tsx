@@ -187,7 +187,7 @@ function CheckoutContent() {
                   <Users className="w-4 h-4" />
                   <span>Voyageurs</span>
                 </div>
-                <span className="font-bold">{booking.adults} Adulte{booking.adults > 1 ? 's' : ''}</span>
+                <span className="font-bold">{booking.guests} Voyageur{booking.guests > 1 ? 's' : ''}</span>
               </div>
             </div>
 

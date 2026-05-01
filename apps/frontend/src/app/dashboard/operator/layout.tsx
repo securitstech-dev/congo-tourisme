@@ -37,7 +37,7 @@ export default function OperatorLayout({
   const menuItems = [
     { icon: LayoutDashboard, label: 'Vue d\'ensemble', href: '/dashboard/operator' },
     { icon: Store, label: 'Mes Annonces', href: '/dashboard/operator/listings' },
-    { icon: CalendarCheck, label: 'Réservations', href: '/dashboard/operator/bookings' },
+    { icon: CalendarCheck, label: 'Réservations', href: '/dashboard/operator/reservations' },
     { icon: BarChart3, label: 'Statistiques', href: '/dashboard/operator/stats' },
     { icon: Settings, label: 'Paramètres', href: '/dashboard/operator/settings' },
   ];

@@ -63,22 +63,33 @@ export default function ListingDetailsPage() {
 
     setIsBooking(true);
     try {
-      // Calcul du prix total (simplifié pour la démo)
+      // Calcul du prix total
       const basePrice = listing.pricePerNight || listing.pricePerPerson || listing.priceFlatRate || 0;
+      let totalAmount = basePrice;
+
+      if (listing.pricePerNight && bookingData.startDate && bookingData.endDate) {
+        const start = new Date(bookingData.startDate);
+        const end = new Date(bookingData.endDate);
+        const diffTime = Math.abs(end.getTime() - start.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        totalAmount = basePrice * (diffDays || 1);
+      } else if (listing.pricePerPerson) {
+        totalAmount = basePrice * (bookingData.adults + bookingData.children);
+      }
       
       const response = await api.post('/bookings', {
         listingId: id,
         startDate: bookingData.startDate,
         endDate: bookingData.endDate || null,
-        totalAmount: basePrice,
+        totalAmount: totalAmount,
         adults: bookingData.adults,
         children: bookingData.children
       });
 
       router.push(`/booking/checkout?id=${response.data.id}`);
     } catch (error) {
-      console.error('Erreur réservation:', error);
-      alert('Une erreur est survenue lors de la réservation.');
+      console.error('Erreur rservation:', error);
+      alert('Une erreur est survenue lors de la rservation.');
     } finally {
       setIsBooking(false);
     }

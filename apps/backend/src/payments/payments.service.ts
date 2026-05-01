@@ -14,6 +14,7 @@ export class PaymentsService {
   constructor(
     private prisma: PrismaService,
     private mtnMomo: MtnMomoProvider,
+    private airtelMomo: AirtelMomoProvider,
     private configService: ConfigService,
     private mailService: MailService,
   ) {
@@ -39,7 +40,10 @@ export class PaymentsService {
 
       await this.prisma.reservation.update({
         where: { id: reservationId },
-        data: { stripePaymentId: intent.id },
+        data: { 
+          stripePaymentId: intent.id,
+          paymentStatus: PaymentStatus.PENDING
+        },
       });
 
       return {
@@ -78,7 +82,7 @@ export class PaymentsService {
             currency: intent.currency.toUpperCase(),
             method: PaymentMethod.STRIPE,
             stripePaymentId: intent.id,
-            status: 'PAID',
+            status: PaymentStatus.PAID,
             paidAt: new Date(),
           },
         });
@@ -111,30 +115,48 @@ export class PaymentsService {
 
     if (!reservation) throw new NotFoundException('Réservation introuvable');
 
-    const response = await this.mtnMomo.processPayment(
+    const provider = phoneNumber.startsWith('05') || phoneNumber.startsWith('04') 
+      ? this.airtelMomo 
+      : this.mtnMomo;
+
+    const response = await provider.processPayment(
       reservation.totalPrice,
       phoneNumber,
       `Paiement pour ${reservation.listing.title}`
     );
 
     if (response.success) {
+      const status = response.status === 'SUCCESS' ? PaymentStatus.PAID : PaymentStatus.PENDING;
       await this.prisma.payment.create({
         data: {
           reservationId,
           amount: reservation.totalPrice,
           currency: 'XAF',
-          method: PaymentMethod.MOBILE_MONEY_MTN,
+          method: phoneNumber.startsWith('05') || phoneNumber.startsWith('04') 
+            ? PaymentMethod.MOBILE_MONEY_AIRTEL 
+            : PaymentMethod.MOBILE_MONEY_MTN,
           mobileMoneyRef: response.transactionId,
-          status: response.status,
+          status: status,
         },
       });
+
+      if (status === PaymentStatus.PENDING || status === PaymentStatus.PAID) {
+        await this.prisma.reservation.update({
+          where: { id: reservationId },
+          data: { 
+            paymentStatus: status,
+            status: status === PaymentStatus.PAID ? ReservationStatus.CONFIRMED : ReservationStatus.PENDING
+          },
+        });
+      }
     }
 
     return response;
   }
 
   async verifyPayment(transactionId: string) {
-    const response = await this.mtnMomo.checkStatus(transactionId);
+    const provider = transactionId.startsWith('AIRTEL-') ? this.airtelMomo : this.mtnMomo;
+    const response = await provider.checkStatus(transactionId);
 
     if (response.status === 'SUCCESS') {
       const payment = await this.prisma.payment.findFirst({
@@ -145,7 +167,7 @@ export class PaymentsService {
         await this.prisma.payment.update({
           where: { id: payment.id },
           data: {
-            status: 'PAID',
+            status: PaymentStatus.PAID,
             paidAt: new Date(),
           },
         });

@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
+import { ReservationStatus } from '@prisma/client';
 
 @Injectable()
 export class BookingsService {
@@ -23,7 +24,7 @@ export class BookingsService {
         checkIn: new Date(createBookingDto.startDate),
         checkOut: createBookingDto.endDate ? new Date(createBookingDto.endDate) : null,
         guests: (createBookingDto.adults || 1) + (createBookingDto.children || 0),
-        status: 'PENDING',
+        status: ReservationStatus.PENDING,
       },
     });
   }
@@ -57,7 +58,7 @@ export class BookingsService {
     });
   }
 
-  async updateStatus(id: string, status: any) {
+  async updateStatus(id: string, status: ReservationStatus) {
     return this.prisma.reservation.update({
       where: { id },
       data: { status },

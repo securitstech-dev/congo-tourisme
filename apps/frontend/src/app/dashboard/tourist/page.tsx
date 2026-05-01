@@ -9,7 +9,8 @@ import {
   Loader2,
   Clock,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  XCircle
 } from 'lucide-react';
 import api from '@/lib/api';
 
@@ -33,9 +34,11 @@ export default function TouristDashboard() {
 
   const getStatusStyle = (status: string) => {
     switch (status) {
-      case 'CONFIRMED': return { icon: CheckCircle2, text: 'Confirm', bg: 'bg-green-100', color: 'text-green-600' };
+      case 'CONFIRMED': return { icon: CheckCircle2, text: 'Confirmée', bg: 'bg-green-100', color: 'text-green-600' };
       case 'PENDING': return { icon: Clock, text: 'En attente', bg: 'bg-orange-100', color: 'text-orange-600' };
-      case 'CANCELLED': return { icon: AlertCircle, text: 'Annul', bg: 'bg-red-100', color: 'text-red-600' };
+      case 'CANCELLED': return { icon: AlertCircle, text: 'Annulée', bg: 'bg-red-100', color: 'text-red-600' };
+      case 'REJECTED': return { icon: XCircle, text: 'Refusée', bg: 'bg-red-100', color: 'text-red-600' };
+      case 'COMPLETED': return { icon: CheckCircle2, text: 'Terminée', bg: 'bg-blue-100', color: 'text-blue-600' };
       default: return { icon: Clock, text: 'Inconnu', bg: 'bg-gray-100', color: 'text-gray-600' };
     }
   };
@@ -97,11 +100,11 @@ export default function TouristDashboard() {
                     <div className="flex items-center gap-6">
                       <div>
                         <p className="text-[10px] font-bold text-subtext uppercase tracking-widest">Date</p>
-                        <p className="text-sm font-bold">{new Date(booking.startDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}</p>
+                        <p className="text-sm font-bold">{new Date(booking.checkIn).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}</p>
                       </div>
                       <div>
                         <p className="text-[10px] font-bold text-subtext uppercase tracking-widest">Montant</p>
-                        <p className="text-sm font-bold text-primary">{booking.totalAmount.toLocaleString()} FCFA</p>
+                        <p className="text-sm font-bold text-primary">{booking.totalPrice.toLocaleString()} FCFA</p>
                       </div>
                     </div>
                     <button className="p-3 bg-accent/30 text-primary rounded-xl hover:bg-primary hover:text-white transition-all">
