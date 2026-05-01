@@ -8,7 +8,9 @@ async function main() {
   // 1. Création du Super Admin
   const admin = await prisma.user.upsert({
     where: { email: 'securitstech@gmail.com' },
-    update: {},
+    update: {
+      passwordHash: '$2b$12$HVoBG7/5OdUAYg2T59iwzOQrhHg2JeW2bewgVs0oC4/HHIMHDkDKu',
+    },
     create: {
       email: 'securitstech@gmail.com',
       firstName: 'Admin',
@@ -16,7 +18,7 @@ async function main() {
       role: UserRole.ADMIN,
       isActive: true,
       isVerified: true,
-      passwordHash: '$2b$12$K89K3K3K3K3K3K3K3K3K3uI6Y2R6Q5W5R5T5Y5U5I5O5P5S5D5F5', // Password123! simulé
+      passwordHash: '$2b$12$HVoBG7/5OdUAYg2T59iwzOQrhHg2JeW2bewgVs0oC4/HHIMHDkDKu', // Admin@Congo2026 hashé
     },
   });
   console.log('Super Admin créé:', admin.email);
