@@ -21,7 +21,7 @@
     "@prisma/client": "^6.2.1"
   },
   "overrides": {
-    "next": "15.3.3",
+    "next": "15.5.15",
     "react": "19.0.0",
     "react-dom": "19.0.0"
   }
