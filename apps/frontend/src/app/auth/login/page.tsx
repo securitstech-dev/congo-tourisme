@@ -38,9 +38,17 @@ export default function LoginPage() {
       const response = await api.post('/auth/login', data);
       const { user, backend_tokens } = response.data;
       setAuth(user, backend_tokens.accessToken, backend_tokens.refreshToken);
-      router.push('/');
+      
+      // Redirection intelligente selon le rôle
+      if (user.role === 'ADMIN') {
+        router.push('/dashboard/admin');
+      } else if (user.role === 'OPERATOR') {
+        router.push('/dashboard/operator');
+      } else {
+        router.push('/dashboard/tourist/profile');
+      }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Une erreur est survenue lors de la connexion');
+      setError(err.response?.data?.message || 'Identifiants incorrects');
     } finally {
       setIsLoading(false);
     }
@@ -49,18 +57,18 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-accent/30 p-4">
       <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden">
-        <div className="p-8 text-center">
-          <Link href="/" className="inline-flex items-center gap-2 mb-8">
-            <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
-              <Landmark className="text-white w-7 h-7" />
+        <div className="p-8 text-center border-b border-gray-50">
+          <Link href="/" className="inline-flex items-center gap-2 mb-6">
+            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+              <Landmark className="text-white w-6 h-6" />
             </div>
-            <span className="text-2xl font-bold text-primary">Congo Tourisme</span>
+            <span className="text-xl font-bold text-primary">Congo Tourisme</span>
           </Link>
-          <h1 className="text-2xl font-bold text-foreground mb-2">Bon retour parmi nous !</h1>
-          <p className="text-subtext">Connectez-vous pour gérer vos réservations.</p>
+          <h1 className="text-2xl font-bold text-foreground mb-1">Portail de Connexion</h1>
+          <p className="text-sm text-subtext">Accédez à votre espace sécurisé.</p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="px-8 pb-8 space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="p-8 space-y-4">
           {error && (
             <div className="p-3 bg-red-50 border border-red-100 text-red-600 text-sm rounded-xl text-center">
               {error}
@@ -68,54 +76,56 @@ export default function LoginPage() {
           )}
 
           <div className="space-y-1">
-            <label className="text-sm font-bold text-subtext ml-1">Email</label>
+            <label className="text-xs font-bold text-subtext ml-1 uppercase tracking-wider">Email</label>
             <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-subtext/40" />
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-subtext/40" />
               <input
                 {...register('email')}
                 type="email"
                 placeholder="exemple@email.com"
-                className="w-full pl-12 pr-4 py-4 bg-accent/20 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 font-medium placeholder:text-subtext/30"
+                className="w-full pl-10 pr-4 py-3 bg-accent/20 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 font-medium placeholder:text-subtext/30"
               />
             </div>
-            {errors.email && <p className="text-xs text-red-500 mt-1 ml-1">{errors.email.message}</p>}
+            {errors.email && <p className="text-[10px] text-red-500 mt-1 ml-1">{errors.email.message}</p>}
           </div>
 
           <div className="space-y-1">
             <div className="flex items-center justify-between ml-1">
-              <label className="text-sm font-bold text-subtext">Mot de passe</label>
-              <Link href="#" className="text-xs font-bold text-primary hover:underline">Oublié ?</Link>
+              <label className="text-xs font-bold text-subtext uppercase tracking-wider">Mot de passe</label>
+              <Link href="#" className="text-[10px] font-bold text-primary hover:underline uppercase tracking-wider">Oublié ?</Link>
             </div>
             <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-subtext/40" />
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-subtext/40" />
               <input
                 {...register('password')}
                 type="password"
                 placeholder="••••••••"
-                className="w-full pl-12 pr-4 py-4 bg-accent/20 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 font-medium placeholder:text-subtext/30"
+                className="w-full pl-10 pr-4 py-3 bg-accent/20 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 font-medium placeholder:text-subtext/30"
               />
             </div>
-            {errors.password && <p className="text-xs text-red-500 mt-1 ml-1">{errors.password.message}</p>}
+            {errors.password && <p className="text-[10px] text-red-500 mt-1 ml-1">{errors.password.message}</p>}
           </div>
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-primary text-white font-bold py-4 rounded-2xl shadow-xl shadow-primary/20 hover:opacity-90 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-          >
-            {isLoading ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <>
-                Se connecter <ArrowRight className="w-5 h-5" />
-              </>
-            )}
-          </button>
+          <div className="pt-2">
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-primary text-white font-bold py-4 rounded-2xl shadow-xl shadow-primary/20 hover:opacity-90 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              {isLoading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <>
+                  Se connecter <ArrowRight className="w-5 h-5" />
+                </>
+              )}
+            </button>
+          </div>
 
-          <p className="text-center text-sm text-subtext pt-4">
+          <p className="text-center text-sm text-subtext pt-2">
             Pas encore de compte ?{' '}
             <Link href="/auth/register" className="font-bold text-primary hover:underline">
-              S'inscrire gratuitement
+              S'inscrire
             </Link>
           </p>
         </form>

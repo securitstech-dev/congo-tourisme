@@ -35,12 +35,11 @@ export default function AdminLayout({
   if (!mounted) return <div className="flex h-screen items-center justify-center bg-gray-50"><div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div></div>;
 
   const menuItems = [
-    { icon: LayoutDashboard, label: 'Vue d\'ensemble', href: '/dashboard/admin' },
-    { icon: Users, label: 'Opérateurs', href: '/dashboard/admin/operators' },
-    { icon: FileCheck, label: 'Validations', href: '/dashboard/admin/validations' },
-    { icon: Building2, label: 'Annonces', href: '/dashboard/admin/listings' },
-    { icon: BarChart3, label: 'Finance & Stats', href: '/dashboard/admin/revenue' },
-    { icon: Settings, label: 'Système', href: '/dashboard/admin/settings' },
+    { icon: Layout, label: 'Tableau de bord', href: '/dashboard/admin' },
+    { icon: Users, label: 'Opérateurs', href: '/dashboard/admin/validations' },
+    { icon: CreditCard, label: 'Finance & Stats', href: '/dashboard/admin/settings' },
+    { icon: BookOpen, label: 'Mode d\'emploi', href: '/dashboard/admin/manual' },
+    { icon: Shield, label: 'Système', href: '/dashboard/admin/settings' },
   ];
 
   return (

@@ -1,6 +1,6 @@
 'use client';
 
-import { Mail, Phone, MapPin, Send, MessageCircle, Clock } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, Clock, Building2 } from 'lucide-react';
 import { useState } from 'react';
 
 export default function ContactPage() {
@@ -35,7 +35,7 @@ export default function ContactPage() {
                 <Mail className="text-primary w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold mb-2">Email</h3>
-              <p className="text-subtext">contact@congotourisme.cg</p>
+              <p className="text-subtext font-medium">securitstech@gmail.com</p>
               <p className="text-subtext">support@congotourisme.cg</p>
             </div>
 
@@ -44,17 +44,21 @@ export default function ContactPage() {
                 <Phone className="text-primary w-6 h-6" />
               </div>
               <h3 className="text-xl font-bold mb-2">Téléphone</h3>
-              <p className="text-subtext">+242 06 123 45 67</p>
-              <p className="text-subtext">+242 05 987 65 43</p>
+              <p className="text-subtext font-medium">+242 05 302 8383</p>
+              <p className="text-subtext font-medium">+242 06 881 71 04</p>
             </div>
 
             <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm">
               <div className="w-12 h-12 bg-accent/30 rounded-2xl flex items-center justify-center mb-6">
-                <Clock className="text-primary w-6 h-6" />
+                <MapPin className="text-primary w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold mb-2">Heures d'ouverture</h3>
-              <p className="text-subtext">Lundi - Vendredi : 08h00 - 18h00</p>
-              <p className="text-subtext">Samedi : 09h00 - 14h00</p>
+              <h3 className="text-xl font-bold mb-2">Direction</h3>
+              <p className="text-subtext font-medium leading-relaxed">
+                Bâtiment de la Préfecture, RDC<br />
+                Direction Départementale des Loisirs<br />
+                Devant le portail du Trésor Public<br />
+                Pointe-Noire, Congo
+              </p>
             </div>
           </div>
 
