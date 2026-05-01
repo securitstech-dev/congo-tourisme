@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { MtnMomoProvider } from './providers/mtn-momo.provider';
+import { AirtelMomoProvider } from './providers/airtel-momo.provider';
 import { PaymentMethod, ReservationStatus, PaymentStatus } from '@prisma/client';
 import Stripe from 'stripe';
 import { ConfigService } from '@nestjs/config';
