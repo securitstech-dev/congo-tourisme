@@ -7,8 +7,9 @@ async function bootstrap() {
   
   // Configuration globale
   app.setGlobalPrefix('api');
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
   app.enableCors({
-    origin: true, // Autorise toutes les origines en développement, on pourra restreindre plus tard
+    origin: [frontendUrl, 'http://localhost:3000', /\.vercel\.app$/],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });

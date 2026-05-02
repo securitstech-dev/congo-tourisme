@@ -5,15 +5,16 @@ import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class ChatbotService {
-  private anthropic: Anthropic;
+  private anthropic: Anthropic | null = null;
 
   constructor(
     private configService: ConfigService,
     private prisma: PrismaService,
   ) {
-    this.anthropic = new Anthropic({
-      apiKey: this.configService.get<string>('ANTHROPIC_API_KEY'),
-    });
+    const apiKey = this.configService.get<string>('ANTHROPIC_API_KEY');
+    if (apiKey) {
+      this.anthropic = new Anthropic({ apiKey });
+    }
   }
 
   async askKongo(message: string) {

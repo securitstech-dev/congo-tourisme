@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from '../src/app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import * as express from 'express';
+import express from 'express';
 
 // Instance réutilisée entre les invocations serverless
 let cachedApp: express.Express | null = null;
@@ -14,8 +14,10 @@ async function createApp(): Promise<express.Express> {
   const app = await NestFactory.create(AppModule, adapter, { logger: false });
 
   app.setGlobalPrefix('api');
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+  
   app.enableCors({
-    origin: true,
+    origin: [frontendUrl, 'http://localhost:3000', /\.vercel\.app$/],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
