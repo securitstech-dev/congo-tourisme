@@ -29,6 +29,10 @@ export class ChatbotService {
         `- ${l.title} (${l.listingType}) à ${l.operator.city}: ${l.description.substring(0, 100)}...`
       ).join('\n');
 
+      if (!this.anthropic) {
+        throw new InternalServerErrorException('Clé API Anthropic non configurée sur le serveur.');
+      }
+
       const response = await this.anthropic.messages.create({
         model: 'claude-3-5-sonnet-20240620', // Utilisation de la version stable la plus performante
         max_tokens: 1024,
