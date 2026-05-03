@@ -176,7 +176,7 @@ export default function ListingDetailsPage() {
           <div>
             <div className="flex items-center gap-2 mb-4">
                <span className="bg-primary/10 text-primary px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest">
-                 {listing.type}
+                 {listing.listingType}
                </span>
                <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-lg ml-2">
                  <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
