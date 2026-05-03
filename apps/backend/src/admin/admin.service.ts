@@ -167,7 +167,6 @@ export class AdminService {
         businessName: true,
         subscriptionPlan: true,
         subscriptionEnd: true,
-        subscriptionStart: true,
         city: true,
         user: { select: { email: true } },
       },
@@ -216,7 +215,7 @@ export class AdminService {
         const active = await this.prisma.operator.count({
           where: {
             isValidated: true,
-            subscriptionStart: { lte: end },
+            validatedAt: { lte: end },
             subscriptionEnd: { gte: start },
           },
         });
@@ -276,7 +275,7 @@ export class AdminService {
         lastName: data.lastName,
         phone: data.phone,
         role: 'OPERATOR',
-        password: 'MANUAL_REGISTRATION_PENDING', 
+        passwordHash: 'MANUAL_REGISTRATION_PENDING', 
         isActive: true,
       },
     });
@@ -286,6 +285,7 @@ export class AdminService {
         userId: user.id,
         businessName: data.businessName,
         businessType: data.businessType,
+        description: "Enregistrement manuel au guichet",
         region: data.region,
         city: data.city,
         address: data.address,
