@@ -242,3 +242,12 @@ model RefreshToken {
   expiresAt DateTime
   createdAt DateTime @default(now())
 }
+// Connaissances pour le Chatbot
+model ChatbotKnowledge {
+  id        String   @id @default(cuid())
+  topic     String   // Titre ou sujet (ex: "Géographie du Congo", "Frais d'abonnement")
+  content   String   @db.Text
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

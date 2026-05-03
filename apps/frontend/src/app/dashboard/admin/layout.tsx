@@ -12,6 +12,7 @@ import {
   CreditCard,
   BookOpen,
   Menu,
+  MessageSquare,
   X
 } from 'lucide-react';
 import Link from 'next/link';
@@ -38,6 +39,7 @@ export default function AdminLayout({
   const menuItems = [
     { icon: Layout, label: 'Tableau de bord', href: '/dashboard/admin' },
     { icon: Users, label: 'Opérateurs', href: '/dashboard/admin/validations' },
+    { icon: MessageSquare, label: 'Chatbot IA (Kongo)', href: '/dashboard/admin/chatbot' },
     { icon: CreditCard, label: 'Finance & Stats', href: '/dashboard/admin/settings' },
     { icon: BookOpen, label: 'Mode d\'emploi', href: '/dashboard/admin/manual' },
     { icon: Shield, label: 'Système', href: '/dashboard/admin/settings' },
