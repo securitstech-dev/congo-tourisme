@@ -12,7 +12,8 @@ import {
   LogOut, 
   Bell,
   User as UserIcon,
-  Landmark
+  Landmark,
+  Receipt
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -39,6 +40,7 @@ export default function OperatorLayout({
     { icon: Store, label: 'Mes Annonces', href: '/dashboard/operator/listings' },
     { icon: CalendarCheck, label: 'Réservations', href: '/dashboard/operator/reservations' },
     { icon: BarChart3, label: 'Statistiques', href: '/dashboard/operator/stats' },
+    { icon: Receipt, label: 'Facturation', href: '/dashboard/operator/billing' },
     { icon: Settings, label: 'Paramètres', href: '/dashboard/operator/settings' },
   ];
 

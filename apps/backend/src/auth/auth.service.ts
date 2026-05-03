@@ -78,15 +78,64 @@ export class AuthService {
 
   private async generateTokens(userId: string, email: string) {
     const payload = { sub: userId, email };
-    return {
-      accessToken: await this.jwtService.signAsync(payload, {
+    
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(payload, {
         expiresIn: '15m',
         secret: process.env.JWT_SECRET,
       }),
-      refreshToken: await this.jwtService.signAsync(payload, {
+      this.jwtService.signAsync(payload, {
         expiresIn: '7d',
         secret: process.env.JWT_REFRESH_SECRET,
       }),
+    ]);
+
+    // Rotation du Refresh Token : on stocke le nouveau token en base
+    // Note: Dans une version plus poussée, on pourrait invalider les anciens ici
+    await this.prisma.refreshToken.create({
+      data: {
+        userId,
+        token: refreshToken,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 jours
+      }
+    });
+
+    return {
+      accessToken,
+      refreshToken,
     };
+  }
+
+  async refreshToken(token: string) {
+    try {
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: process.env.JWT_REFRESH_SECRET,
+      });
+
+      // Vérifier si le token existe toujours en base (non révoqué)
+      const storedToken = await this.prisma.refreshToken.findUnique({
+        where: { token },
+      });
+
+      if (!storedToken) {
+        throw new UnauthorizedException('Refresh token invalide ou révoqué');
+      }
+
+      // Supprimer l'ancien token (rotation)
+      await this.prisma.refreshToken.delete({
+        where: { token },
+      });
+
+      // Générer de nouveaux tokens
+      return this.generateTokens(payload.sub, payload.email);
+    } catch (e) {
+      throw new UnauthorizedException('Session expirée');
+    }
+  }
+
+  async logout(token: string) {
+    await this.prisma.refreshToken.deleteMany({
+      where: { token },
+    });
   }
 }
