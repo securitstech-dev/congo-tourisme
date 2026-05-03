@@ -82,10 +82,12 @@ export default function OperatorOnboarding() {
           });
 
           // Récupérer les types de docs déjà uploadés
-          if (op.documents) {
-            setUploadedDocs(op.documents.map((d: any) => d.type));
+          if (op.documents && Array.isArray(op.documents)) {
+            const docTypes = op.documents.map((d: any) => d.type);
+            setUploadedDocs(docTypes);
+            
             // Si tous les docs sont là et qu'il a un businessName, on montre l'étape "Soumis"
-            if (op.documents.length >= REQUIRED_DOCS.length && op.businessName) {
+            if (docTypes.length >= REQUIRED_DOCS.length && op.businessName) {
               setStep(4);
             }
           }

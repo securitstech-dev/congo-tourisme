@@ -28,7 +28,8 @@ export default function OperatorLayout({
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
 
-  const isOnboarding = pathname === '/dashboard/operator/onboarding';
+  // Sécurisation du pathname qui peut être null au premier rendu
+  const isOnboarding = pathname?.includes('/onboarding') ?? false;
 
   useEffect(() => {
     setMounted(true);
