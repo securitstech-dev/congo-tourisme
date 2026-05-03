@@ -357,9 +357,9 @@ export default function HomePage() {
               <div className="absolute -inset-4 bg-primary/20 rounded-[60px] blur-3xl animate-pulse" />
               <div className="relative rounded-[50px] overflow-hidden shadow-2xl border border-white/20">
                 <img 
-                  src="https://images.unsplash.com/photo-1454165833767-027ffea9e778?q=80&w=1000" 
+                  src="https://images.unsplash.com/photo-1531123897727-8f129e1bfa82?auto=format&fit=crop&q=80&w=1000" 
                   className="w-full h-full object-cover"
-                  alt="Dashboard Preview"
+                  alt="Bienvenue aux opérateurs touristiques du Congo"
                 />
                 <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent" />
               </div>
