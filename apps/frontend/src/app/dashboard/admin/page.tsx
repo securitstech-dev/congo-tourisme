@@ -32,8 +32,9 @@ export default function AdminDashboard() {
       setStats(statsRes.data);
       setPendingOperators(pendingRes.data);
       setAllOperators(allRes.data);
-    } catch {
-      // Erreur réseau gérée silencieusement
+    } catch (error) {
+      console.error('Erreur chargement admin:', error);
+      // Optionnel: afficher un toast ou une alerte
     } finally {
       setIsLoading(false);
     }
@@ -131,10 +132,10 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      {/* ──── ONG VUE D'ENSEMBLE ──── */}
+      {/* Stats Cards */}
       {activeTab === 'overview' && (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
             {statCards.map((stat, i) => (
               <div key={i} className="bg-white p-6 rounded-[24px] border border-gray-100 shadow-sm hover:shadow-md transition-all">
                 <div className={`w-12 h-12 rounded-2xl ${stat.bg} ${stat.color} flex items-center justify-center mb-4`}>

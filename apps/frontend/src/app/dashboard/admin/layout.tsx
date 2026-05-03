@@ -6,15 +6,13 @@ import React, { useEffect, useState } from 'react';
 import { 
   LayoutDashboard as Layout, 
   Users, 
-  FileCheck, 
-  BarChart3, 
-  Settings, 
   LogOut, 
   Bell,
   ShieldCheck as Shield,
-  Building2,
   CreditCard,
-  BookOpen
+  BookOpen,
+  Menu,
+  X
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -26,6 +24,7 @@ export default function AdminLayout({
   const { user, isAuthenticated, logout } = useAuthStore();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -45,14 +44,34 @@ export default function AdminLayout({
   ];
 
   return (
-    <div className="flex h-screen bg-accent/20 overflow-hidden">
+    <div className="flex h-screen bg-accent/20 overflow-hidden relative">
+      {/* Overlay pour mobile quand la sidebar est ouverte */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-100 flex flex-col">
-        <div className="p-6 flex items-center gap-2">
-          <div className="w-8 h-8 bg-secondary rounded-lg flex items-center justify-center">
-            <Shield className="text-white w-5 h-5" />
+      <aside className={`
+        fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-100 flex flex-col transition-transform duration-300 ease-in-out
+        lg:translate-x-0 lg:static lg:inset-auto
+        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+      `}>
+        <div className="p-6 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-secondary rounded-lg flex items-center justify-center">
+              <Shield className="text-white w-5 h-5" />
+            </div>
+            <span className="font-bold text-foreground">Admin CT</span>
           </div>
-          <span className="font-bold text-foreground">Admin CT</span>
+          <button 
+            className="lg:hidden p-2 text-subtext hover:bg-accent rounded-lg"
+            onClick={() => setIsSidebarOpen(false)}
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         <nav className="flex-1 px-4 py-4 space-y-1">
@@ -60,6 +79,7 @@ export default function AdminLayout({
             <Link
               key={i}
               href={item.href}
+              onClick={() => setIsSidebarOpen(false)}
               className="flex items-center gap-3 px-4 py-3 text-subtext font-medium rounded-xl hover:bg-accent hover:text-secondary transition-all group"
             >
               <item.icon className="w-5 h-5 group-hover:scale-110 transition-transform" />
@@ -80,23 +100,33 @@ export default function AdminLayout({
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main className="flex-1 flex flex-col overflow-hidden w-full">
         {/* Header */}
-        <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-8">
-          <h2 className="text-xl font-bold text-foreground">Administration Securits Tech</h2>
+        <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-4 lg:px-8 shrink-0">
+          <div className="flex items-center gap-4">
+            <button 
+              className="lg:hidden p-2 text-subtext hover:bg-accent rounded-lg"
+              onClick={() => setIsSidebarOpen(true)}
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+            <h2 className="text-lg lg:text-xl font-bold text-foreground truncate max-w-[150px] lg:max-w-none">
+              Administration
+            </h2>
+          </div>
           
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2 lg:gap-6">
             <button className="relative p-2 text-subtext hover:bg-accent rounded-full transition-all">
-              <Bell className="w-6 h-6" />
+              <Bell className="w-5 h-5 lg:w-6 h-6" />
               <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
             </button>
             
-            <div className="flex items-center gap-3 pl-6 border-l border-gray-100">
-              <div className="text-right">
-                <p className="text-sm font-bold text-foreground">{user?.firstName} {user?.lastName}</p>
-                <p className="text-xs text-subtext">Super Administrateur</p>
+            <div className="flex items-center gap-2 lg:gap-3 pl-2 lg:pl-6 border-l border-gray-100">
+              <div className="text-right hidden sm:block">
+                <p className="text-xs lg:text-sm font-bold text-foreground">{user?.firstName} {user?.lastName}</p>
+                <p className="text-[10px] lg:text-xs text-subtext uppercase tracking-tighter">Admin</p>
               </div>
-              <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center text-white font-bold">
+              <div className="w-8 h-8 lg:w-10 h-10 bg-secondary rounded-full flex items-center justify-center text-white font-bold text-sm lg:text-base">
                 {user?.firstName?.charAt(0)}
               </div>
             </div>
@@ -104,8 +134,10 @@ export default function AdminLayout({
         </header>
 
         {/* Page Body */}
-        <div className="flex-1 overflow-y-auto p-8">
-          {children}
+        <div className="flex-1 overflow-y-auto p-4 lg:p-8 bg-gray-50/50">
+          <div className="max-w-7xl mx-auto">
+            {children}
+          </div>
         </div>
       </main>
     </div>
