@@ -36,10 +36,18 @@ export default function HomePage() {
   const [listings, setListings] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const [currentBgIndex, setCurrentBgIndex] = useState(0);
+
+  const heroImages = [
+    'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?q=80&w=2000', // Forêt/Nature (Odzala)
+    'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2000', // Plage (Pointe-Noire)
+    'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=2000', // Fleuve/Ville (Brazzaville)
+  ];
+
   const featuredDestinations = [
-    { title: 'Pointe-Noire', sub: 'La Côte Sauvage', img: 'https://images.unsplash.com/photo-1518005020251-58296d19119d?q=80&w=800' },
-    { title: 'Odzala-Kokoua', sub: 'Parc National', img: 'https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?q=80&w=800' },
-    { title: 'Brazzaville', sub: 'La Verte', img: 'https://images.unsplash.com/photo-1493246507139-91e8bef99c02?q=80&w=800' },
+    { title: 'Pointe-Noire', sub: 'La Côte Sauvage', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=800' },
+    { title: 'Odzala-Kokoua', sub: 'Parc National', img: 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?q=80&w=800' },
+    { title: 'Brazzaville', sub: 'La Verte', img: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=800' },
   ];
 
   useEffect(() => {
@@ -56,25 +64,31 @@ export default function HomePage() {
     fetchListings();
   }, []);
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentBgIndex((prev) => (prev + 1) % heroImages.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [heroImages.length]);
+
   return (
     <div className="bg-background overflow-hidden">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center pt-20">
-        <div className="absolute inset-0 z-0">
-          <motion.div 
-            initial={{ scale: 1.1 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 1.5 }}
-            className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent z-10" 
-          />
-          <motion.img 
-            initial={{ scale: 1.1 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 10, repeat: Infinity, repeatType: "reverse" }}
-            src="https://images.unsplash.com/photo-1449034446853-66c86144b0ad?q=80&w=2000" 
-            className="w-full h-full object-cover"
-            alt="Congo Landscape"
-          />
+      <section className="relative min-h-[90vh] flex items-center pt-20">
+        <div className="absolute inset-0 z-0 overflow-hidden bg-black">
+          <AnimatePresence mode="popLayout">
+            <motion.img 
+              key={currentBgIndex}
+              initial={{ opacity: 0, scale: 1.05 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.5, ease: "easeInOut" }}
+              src={heroImages[currentBgIndex]} 
+              className="absolute inset-0 w-full h-full object-cover"
+              alt="Congo Landscape"
+            />
+          </AnimatePresence>
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/20 z-10" />
         </div>
 
         <div className="container mx-auto px-6 relative z-20 text-white">
@@ -125,38 +139,39 @@ export default function HomePage() {
           </motion.div>
         </div>
 
-        {/* Quick Stats Bar */}
-        <motion.div 
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1, duration: 1 }}
-          className="absolute bottom-10 left-0 right-0 z-20 hidden lg:block"
-        >
-          <div className="container mx-auto px-6">
-            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[32px] p-8 flex justify-between items-center text-white">
-              <div className="flex items-center gap-4">
-                <div className="text-4xl font-black text-primary">500+</div>
-                <div className="text-sm font-bold text-gray-400">Établissements<br/>Vérifiés</div>
-              </div>
-              <div className="w-px h-12 bg-white/10" />
-              <div className="flex items-center gap-4">
-                <div className="text-4xl font-black text-secondary">24/7</div>
-                <div className="text-sm font-bold text-gray-400">Assistance<br/>Touristique</div>
-              </div>
-              <div className="w-px h-12 bg-white/10" />
-              <div className="flex items-center gap-4">
-                <div className="text-4xl font-black text-primary">100%</div>
-                <div className="text-sm font-bold text-gray-400">Paiements<br/>Sécurisés</div>
-              </div>
-              <div className="w-px h-12 bg-white/10" />
-              <div className="flex items-center gap-4">
-                <div className="text-4xl font-black text-secondary">12</div>
-                <div className="text-sm font-bold text-gray-400">Parcs & Sites<br/>Nationaux</div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
       </section>
+
+      {/* Quick Stats Bar (Moved down below hero) */}
+      <div className="relative z-30 -mt-16 mb-16 hidden lg:block">
+        <div className="container mx-auto px-6">
+          <motion.div 
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 1 }}
+            className="bg-white rounded-[32px] shadow-2xl p-8 flex justify-between items-center border border-gray-100"
+          >
+            <div className="flex items-center gap-4">
+              <div className="text-4xl font-black text-primary">500+</div>
+              <div className="text-sm font-bold text-gray-600">Établissements<br/>Vérifiés</div>
+            </div>
+            <div className="w-px h-12 bg-gray-200" />
+            <div className="flex items-center gap-4">
+              <div className="text-4xl font-black text-secondary">24/7</div>
+              <div className="text-sm font-bold text-gray-600">Assistance<br/>Touristique</div>
+            </div>
+            <div className="w-px h-12 bg-gray-200" />
+            <div className="flex items-center gap-4">
+              <div className="text-4xl font-black text-primary">100%</div>
+              <div className="text-sm font-bold text-gray-600">Paiements<br/>Sécurisés</div>
+            </div>
+            <div className="w-px h-12 bg-gray-200" />
+            <div className="flex items-center gap-4">
+              <div className="text-4xl font-black text-secondary">12</div>
+              <div className="text-sm font-bold text-gray-600">Parcs & Sites<br/>Nationaux</div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
 
       {/* Featured Section */}
       <section className="py-32 container mx-auto px-6">
