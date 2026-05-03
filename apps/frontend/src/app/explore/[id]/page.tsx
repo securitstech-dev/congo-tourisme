@@ -21,9 +21,11 @@ import {
   Bot
 } from 'lucide-react';
 import Link from 'next/link';
+import api from '@/lib/api';
+import { useAuthStore } from '@/store/authStore';
 import dynamic from 'next/dynamic';
 
-// Dynamically import MapView to avoid SSR issues
+// Dynamically import MapView to avoid SSR issues (Leaflet ne supporte pas le SSR)
 const MapView = dynamic(() => import('@/components/MapView'), {
   ssr: false,
   loading: () => <div className="w-full h-full min-h-[300px] flex items-center justify-center bg-gray-50 rounded-3xl border border-gray-100"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>
