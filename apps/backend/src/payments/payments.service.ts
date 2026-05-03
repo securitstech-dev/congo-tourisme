@@ -142,13 +142,24 @@ export class PaymentsService {
       });
 
       if (status === PaymentStatus.PENDING || status === PaymentStatus.PAID) {
-        await this.prisma.reservation.update({
+        const updatedRes = await this.prisma.reservation.update({
           where: { id: reservationId },
           data: { 
             paymentStatus: status,
             status: status === PaymentStatus.PAID ? ReservationStatus.CONFIRMED : ReservationStatus.PENDING
           },
+          include: { tourist: true, listing: true }
         });
+
+        // Envoi d'email de confirmation immédiat en cas de succès (utile pour la simulation)
+        if (status === PaymentStatus.PAID && updatedRes.tourist?.email) {
+          await this.mailService.sendBookingConfirmation(
+            updatedRes.tourist.email,
+            updatedRes.id,
+            updatedRes.listing.title,
+            updatedRes.totalPrice
+          );
+        }
       }
     }
 

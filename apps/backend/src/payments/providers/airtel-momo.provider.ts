@@ -12,8 +12,8 @@ export class AirtelMomoProvider implements PaymentProvider {
     return {
       success: true,
       transactionId: `AIRTEL-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
-      message: 'Demande de paiement Airtel Money envoyée.',
-      status: 'PENDING',
+      message: 'Paiement effectué avec succès (Simulation).',
+      status: 'SUCCESS',
     };
   }
 

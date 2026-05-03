@@ -12,8 +12,8 @@ export class MtnMomoProvider implements PaymentProvider {
     return {
       success: true,
       transactionId: `MTN-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
-      message: 'Demande de paiement envoyée sur le mobile du client.',
-      status: 'PENDING',
+      message: 'Paiement effectué avec succès (Simulation).',
+      status: 'SUCCESS',
     };
   }
 
