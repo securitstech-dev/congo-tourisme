@@ -66,9 +66,12 @@ export default function Navbar() {
           >
             <Map className="text-white w-6 h-6" />
           </motion.div>
-          <div className="flex flex-col -gap-1">
-            <span className="text-xl font-black tracking-tighter leading-none group-hover:text-primary transition-colors">CONGO</span>
-            <span className="text-[10px] font-bold text-subtext tracking-[0.2em] leading-none">TOURISME</span>
+          <div className="flex flex-col justify-center">
+            <div className="flex items-center gap-1">
+              <span className="text-xl font-black tracking-tighter leading-none group-hover:text-primary transition-colors">TOURISME</span>
+              <span className="text-xl font-black tracking-tighter leading-none text-secondary">CONGO</span>
+            </div>
+            <span className="text-[8px] font-bold text-subtext tracking-widest leading-none mt-1 uppercase">Le portail du tourisme et des loisirs</span>
           </div>
         </Link>
 
@@ -193,7 +196,13 @@ export default function Navbar() {
                 <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
                   <Map className="text-white w-6 h-6" />
                 </div>
-                <span className="text-xl font-black tracking-tighter">CONGO TOURISME</span>
+                <div className="flex flex-col justify-center">
+                  <div className="flex items-center gap-1">
+                    <span className="text-xl font-black tracking-tighter leading-none group-hover:text-primary transition-colors">TOURISME</span>
+                    <span className="text-xl font-black tracking-tighter leading-none text-secondary">CONGO</span>
+                  </div>
+                  <span className="text-[8px] font-bold text-subtext tracking-widest leading-none mt-1 uppercase">Le portail du tourisme et des loisirs</span>
+                </div>
               </Link>
               <button 
                 onClick={() => setIsMobileMenuOpen(false)}
