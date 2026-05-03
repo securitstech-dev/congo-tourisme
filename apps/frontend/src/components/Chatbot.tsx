@@ -28,11 +28,9 @@ export default function Chatbot() {
 
   const handleSend = async () => {
     if (!message.trim() || isLoading) return;
-    if (!isAuthenticated) {
-      setChatHistory(prev => [...prev, { role: 'user', content: message }, { role: 'bot', content: 'Veuillez vous connecter pour discuter avec moi.' }]);
-      setMessage('');
-      return;
-    }
+    if (!message.trim() || isLoading) return;
+
+    const userMessage = message;
 
     const userMessage = message;
     setMessage('');
@@ -43,7 +41,7 @@ export default function Chatbot() {
       const response = await api.post('/chatbot/ask', { message: userMessage });
       setChatHistory(prev => [...prev, { role: 'bot', content: response.data.response }]);
     } catch (error) {
-      setChatHistory(prev => [...prev, { role: 'bot', content: 'Désolé, j\'ai un petit problème technique. Réessayez plus tard !' }]);
+      setChatHistory(prev => [...prev, { role: 'bot', content: 'Désolé, j\'ai un petit souci technique. Kongo se repose un instant, réessayez plus tard !' }]);
     } finally {
       setIsLoading(false);
     }

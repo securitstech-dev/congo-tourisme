@@ -16,21 +16,27 @@ export class ChatbotService {
   }
 
   async askKongo(message: string) {
+    const knowledge = await this.prisma.chatbotKnowledge.findMany({
+      where: { isActive: true },
+    });
+
     try {
-      // 1. Récupérer les connaissances spécifiques du Super Admin
-      const knowledge = await this.prisma.chatbotKnowledge.findMany({
-        where: { isActive: true },
+      const apiKey = this.configService.get<string>('ANTHROPIC_API_KEY');
+      
+      // Fallback si la clé n'est pas configurée (mode démo)
+      if (!apiKey || apiKey.length < 10 || apiKey.includes('placeholder')) {
+        return this.mockResponse(message, knowledge);
+      }
+
+      // 1. Récupérer quelques annonces pour donner du contexte concret
+      const topListings = await this.prisma.listing.findMany({
+        take: 10,
+        include: { operator: true },
       });
 
       const knowledgeContext = knowledge.map(k => 
         `### ${k.topic}\n${k.content}`
       ).join('\n\n');
-
-      // 2. Récupérer quelques annonces pour donner du contexte concret
-      const topListings = await this.prisma.listing.findMany({
-        take: 10,
-        include: { operator: true },
-      });
 
       const listingsContext = topListings.map(l => 
         `- ${l.title} (${l.listingType}) à ${l.operator.city}: ${l.description.substring(0, 150)}...`
@@ -70,8 +76,34 @@ export class ChatbotService {
       
     } catch (error) {
       console.error('Chatbot Error:', error);
-      throw new InternalServerErrorException('Kongo est temporairement indisponible.');
+      // Fallback intelligent en cas d'erreur API
+      return this.mockResponse(message, knowledge);
     }
+  }
+
+  private mockResponse(message: string, knowledge: any[]) {
+    const msg = message.toLowerCase();
+    
+    // 1. Recherche par mot-clé dans la base de connaissances
+    const match = knowledge.find(k => 
+      msg.includes(k.topic.toLowerCase()) || k.content.toLowerCase().includes(msg)
+    );
+
+    if (match) {
+      return { response: match.content };
+    }
+
+    // 2. Réponses de base
+    if (msg.includes('mbote') || msg.includes('bonjour') || msg.includes('salut')) {
+      return { response: "Mbote ! Je suis Kongo, votre guide expert. Comment puis-je vous aider à explorer les merveilles du Congo ?" };
+    }
+
+    if (msg.includes('qui es-tu') || msg.includes('ton nom')) {
+      return { response: "Je suis Kongo, l'intelligence artificielle dédiée au tourisme en République du Congo. Je suis là pour vous guider !" };
+    }
+
+    // 3. Fallback final
+    return { response: "Je m'en excuse, mais je n'ai pas encore cette information précise en mémoire (Mode Démo). Je vous invite à poser votre question directement à l'administrateur." };
   }
 
   // Méthodes pour l'administration de la connaissance

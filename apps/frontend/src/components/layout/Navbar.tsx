@@ -59,20 +59,12 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="group flex items-center gap-2">
-          <motion.div 
-            whileHover={{ rotate: -10 }}
-            className="w-10 h-10 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20"
-          >
-            <Map className="text-white w-6 h-6" />
-          </motion.div>
-          <div className="flex flex-col justify-center">
-            <div className="flex items-center gap-1">
-              <span className="text-xl font-black tracking-tighter leading-none group-hover:text-primary transition-colors">TOURISME</span>
-              <span className="text-xl font-black tracking-tighter leading-none text-secondary">CONGO</span>
-            </div>
-            <span className="text-[8px] font-bold text-subtext tracking-widest leading-none mt-1 uppercase">Le portail du tourisme et des loisirs</span>
-          </div>
+        <Link href="/" className="flex items-center gap-2">
+          <img 
+            src="/logo.png" 
+            alt="Tourisme Congo" 
+            className="h-12 w-auto object-contain"
+          />
         </Link>
 
         {/* Desktop Navigation */}
