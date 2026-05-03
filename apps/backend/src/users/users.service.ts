@@ -11,7 +11,6 @@ export class UsersService {
       where: { email },
       include: {
         operator: true,
-        tourist: true,
       }
     });
   }
@@ -21,7 +20,6 @@ export class UsersService {
       where: { id },
       include: {
         operator: true,
-        tourist: true,
       }
     });
   }

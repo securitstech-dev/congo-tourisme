@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Req, Body, Patch } from '@nestjs/common';
+import { Controller, Get, UseGuards, Req, Body, Patch, NotFoundException } from '@nestjs/common';
 import { OperatorsService } from './operators.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
@@ -20,6 +20,9 @@ export class OperatorsController {
   @Patch('profile')
   async updateProfile(@Req() req, @Body() data: any) {
     const operator = await this.operatorsService.findByUserId(req.user.id);
+    if (!operator) {
+      throw new NotFoundException('Profil opérateur non trouvé');
+    }
     return this.operatorsService.update(operator.id, data);
   }
 }
