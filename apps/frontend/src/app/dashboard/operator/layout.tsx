@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuthStore } from '@/store/authStore';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { 
   LayoutDashboard, 
@@ -25,14 +25,22 @@ export default function OperatorLayout({
 }) {
   const { user, isAuthenticated, logout } = useAuthStore();
   const router = useRouter();
+  const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
+
+  const isOnboarding = pathname === '/dashboard/operator/onboarding';
 
   useEffect(() => {
     setMounted(true);
     if (!isAuthenticated || user?.role !== 'OPERATOR') {
-      // router.push('/auth/login'); // Commenté pour le dev si besoin de voir sans login
+      // router.push('/auth/login');
     }
-  }, [isAuthenticated, user, router]);
+
+    // Redirection automatique vers l'onboarding si non validé
+    if (mounted && user && !user.operator?.isValidated && !isOnboarding) {
+      router.push('/dashboard/operator/onboarding');
+    }
+  }, [isAuthenticated, user, router, mounted, isOnboarding]);
 
   if (!mounted) return <div className="flex h-screen items-center justify-center bg-gray-50"><div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div></div>;
 
@@ -104,7 +112,7 @@ export default function OperatorLayout({
 
         {/* Page Body */}
         <div className="flex-1 overflow-y-auto p-8 relative">
-          {(!user?.operator?.isValidated) && (
+          {(!user?.operator?.isValidated && !isOnboarding) && (
             <div className="absolute inset-0 z-50 bg-white/80 backdrop-blur-md flex flex-col items-center justify-center">
               <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md text-center border border-gray-100">
                 <div className="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">

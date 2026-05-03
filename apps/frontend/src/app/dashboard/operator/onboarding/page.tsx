@@ -45,13 +45,59 @@ type OnboardingValues = z.infer<typeof onboardingSchema>;
 
 export default function OperatorOnboarding() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // Commencer en chargement
   const [step, setStep] = useState(1);
   const [selectedPlan, setSelectedPlan] = useState<'STARTER' | 'BUSINESS' | 'PREMIUM'>('BUSINESS');
+  const [uploadedDocs, setUploadedDocs] = useState<string[]>([]);
+  const [uploadingDoc, setUploadingDoc] = useState<string | null>(null);
 
-  const { register, handleSubmit, formState: { errors } } = useForm<OnboardingValues>({
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<OnboardingValues>({
     resolver: zodResolver(onboardingSchema) as any
   });
+
+  // Vérifier l'état initial au chargement
+  useEffect(() => {
+    const checkStatus = async () => {
+      try {
+        const res = await api.get('/operators/me'); // Endpoint à vérifier/créer
+        const op = res.data;
+        
+        if (op) {
+          // Si déjà validé, on sort de là
+          if (op.isValidated) {
+            router.push('/dashboard/operator');
+            return;
+          }
+
+          // Pré-remplir le formulaire
+          reset({
+            businessName: op.businessName || '',
+            rccmNumber: op.rccmNumber || '',
+            taxId: op.taxId || '',
+            legalAddress: op.legalAddress || '',
+            managerName: op.managerName || '',
+            phone: op.phone || '',
+            city: op.city || '',
+            region: op.region || '',
+          });
+
+          // Récupérer les types de docs déjà uploadés
+          if (op.documents) {
+            setUploadedDocs(op.documents.map((d: any) => d.type));
+            // Si tous les docs sont là et qu'il a un businessName, on montre l'étape "Soumis"
+            if (op.documents.length >= REQUIRED_DOCS.length && op.businessName) {
+              setStep(4);
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Erreur check status:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    checkStatus();
+  }, [reset, router]);
 
   const onSubmit = async (data: OnboardingValues) => {
     if (uploadedDocs.length < REQUIRED_DOCS.length) {
@@ -75,9 +121,6 @@ export default function OperatorOnboarding() {
     }
   };
 
-  const [uploadedDocs, setUploadedDocs] = useState<string[]>([]);
-  const [uploadingDoc, setUploadingDoc] = useState<string | null>(null);
-
   const handleFileUpload = async (type: string, file: File) => {
     setUploadingDoc(type);
     const formData = new FormData();
@@ -95,6 +138,15 @@ export default function OperatorOnboarding() {
       setUploadingDoc(null);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+        <Loader2 className="w-12 h-12 animate-spin text-primary" />
+        <p className="text-subtext font-bold animate-pulse text-sm uppercase tracking-widest">Vérification de votre dossier...</p>
+      </div>
+    );
+  }
 
   if (step === 4) {
     return (

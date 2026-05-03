@@ -6,9 +6,10 @@ import { Operator, Prisma } from '@prisma/client';
 export class OperatorsService {
   constructor(private prisma: PrismaService) {}
 
-  async findByUserId(userId: string): Promise<Operator | null> {
+  async findByUserId(userId: string) {
     return this.prisma.operator.findUnique({
       where: { userId },
+      include: { documents: true },
     });
   }
 
