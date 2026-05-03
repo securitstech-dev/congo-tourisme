@@ -116,8 +116,9 @@ export default function OperatorOnboarding() {
 
       // 2. Passer à l'étape succès
       setStep(4);
-    } catch (error) {
-      alert("Une erreur est survenue lors de l'enregistrement de votre dossier.");
+    } catch (error: any) {
+      const message = error.response?.data?.message || error.message || "Erreur inconnue";
+      alert(`Erreur lors de l'enregistrement : ${message}`);
     } finally {
       setIsLoading(false);
     }
