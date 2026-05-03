@@ -164,7 +164,7 @@ export class PaymentsService {
         where: { mobileMoneyRef: transactionId },
       });
 
-      if (payment) {
+      if (payment && payment.status !== PaymentStatus.PAID) {
         await this.prisma.payment.update({
           where: { id: payment.id },
           data: {
@@ -173,10 +173,20 @@ export class PaymentsService {
           },
         });
 
-        await this.prisma.reservation.update({
+        const updatedRes = await this.prisma.reservation.update({
           where: { id: payment.reservationId },
           data: { paymentStatus: PaymentStatus.PAID, status: ReservationStatus.CONFIRMED },
+          include: { tourist: true, listing: true }
         });
+
+        if (updatedRes.tourist?.email) {
+          await this.mailService.sendBookingConfirmation(
+            updatedRes.tourist.email,
+            updatedRes.id,
+            updatedRes.listing.title,
+            updatedRes.totalPrice
+          );
+        }
       }
     }
 

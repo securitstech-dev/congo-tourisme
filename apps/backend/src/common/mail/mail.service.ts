@@ -65,4 +65,22 @@ export class MailService {
     `;
     await this.sendMail(email, subject, html);
   }
+
+  async sendSubscriptionInvoice(email: string, invoiceId: string, planName: string, amount: number) {
+    const subject = 'Votre facture Congo Tourisme';
+    const html = `
+      <div style="font-family: sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 20px; border-radius: 12px;">
+        <h2 style="color: #1A6B4A;">Paiement Confirmé</h2>
+        <p>Merci pour votre confiance. Votre abonnement a bien été renouvelé.</p>
+        <div style="background: #f9faf8; padding: 15px; border-radius: 8px; margin: 20px 0;">
+          <p><strong>Facture :</strong> ${invoiceId}</p>
+          <p><strong>Plan :</strong> ${planName}</p>
+          <p><strong>Montant :</strong> ${amount.toLocaleString()} FCFA</p>
+        </div>
+        <p>Vous pouvez télécharger votre facture détaillée depuis votre tableau de bord.</p>
+        <p style="margin-top: 30px;">L'équipe Congo Tourisme</p>
+      </div>
+    `;
+    await this.sendMail(email, subject, html);
+  }
 }

@@ -1,10 +1,14 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { SubscriptionPlan, PaymentStatus } from '@prisma/client';
+import { MailService } from '../common/mail/mail.service';
 
 @Injectable()
 export class SubscriptionsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private mailService: MailService,
+  ) {}
 
   async getOperatorByUserId(userId: string) {
     const operator = await this.prisma.operator.findUnique({
@@ -58,6 +62,11 @@ export class SubscriptionsService {
   async confirmPayment(subscriptionId: string, method: string, reference: string) {
     const subscription = await this.prisma.subscription.findUnique({
       where: { id: subscriptionId },
+      include: {
+        operator: {
+          include: { user: true }
+        }
+      }
     });
 
     if (!subscription) {
@@ -68,9 +77,9 @@ export class SubscriptionsService {
       throw new BadRequestException('Cet abonnement est déjà payé');
     }
 
-    return this.prisma.$transaction(async (tx) => {
+    const updatedSub = await this.prisma.$transaction(async (tx) => {
       // 1. Marquer l'abonnement comme payé et actif
-      const updatedSub = await tx.subscription.update({
+      const sub = await tx.subscription.update({
         where: { id: subscriptionId },
         data: {
           paymentStatus: PaymentStatus.PAID,
@@ -89,8 +98,20 @@ export class SubscriptionsService {
         },
       });
 
-      return updatedSub;
+      return sub;
     });
+
+    // Envoi de l'email de facture
+    if (subscription.operator?.user?.email) {
+      await this.mailService.sendSubscriptionInvoice(
+        subscription.operator.user.email,
+        `INV-${subscription.id.substring(0, 8).toUpperCase()}`,
+        subscription.plan,
+        subscription.amount
+      );
+    }
+
+    return updatedSub;
   }
 
   /**
