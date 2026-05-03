@@ -2,14 +2,14 @@ import { Controller, Get, UseGuards, Req, Body, Patch, NotFoundException, Post, 
 import { FileInterceptor } from '@nestjs/platform-express';
 import { OperatorsService } from './operators.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { CloudinaryService } from '../common/cloudinary/cloudinary.service';
+import { SupabaseStorageService } from '../common/supabase-storage/supabase-storage.service';
 
 @Controller('operators')
 @UseGuards(JwtAuthGuard)
 export class OperatorsController {
   constructor(
     private operatorsService: OperatorsService,
-    private cloudinaryService: CloudinaryService
+    private storageService: SupabaseStorageService
   ) {}
 
   @Get('me')
@@ -42,7 +42,7 @@ export class OperatorsController {
       const operator = await this.operatorsService.findByUserId(req.user.id);
       if (!operator) throw new NotFoundException('Opérateur non trouvé');
 
-      const result = await this.cloudinaryService.uploadFile(file, 'operators/documents');
+      const result = await this.storageService.uploadFile(file, 'operators/documents');
       return this.operatorsService.uploadDocument(
         operator.id,
         type as any,

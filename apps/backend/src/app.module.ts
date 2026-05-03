@@ -14,6 +14,7 @@ import { MailModule } from './common/mail/mail.module';
 
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { ReviewsModule } from './reviews/reviews.module';
+import { SupabaseStorageModule } from './common/supabase-storage/supabase-storage.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { ReviewsModule } from './reviews/reviews.module';
     MailModule,
     SubscriptionsModule,
     ReviewsModule,
+    SupabaseStorageModule,
   ],
   controllers: [],
   providers: [],
