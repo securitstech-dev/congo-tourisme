@@ -21,4 +21,8 @@ export class RegisterDto {
 
   @IsOptional()
   role?: UserRole;
+
+  @IsOptional()
+  @IsString()
+  plan?: string;
 }

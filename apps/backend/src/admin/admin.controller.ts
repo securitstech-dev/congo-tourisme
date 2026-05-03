@@ -16,9 +16,19 @@ export class AdminController {
     return this.adminService.getPendingOperators();
   }
 
+  @Get('operators')
+  getAllOperators() {
+    return this.adminService.getAllOperators();
+  }
+
   @Patch('operators/:id/validate')
   validateOperator(@Param('id') id: string) {
     return this.adminService.validateOperator(id);
+  }
+
+  @Patch('operators/:id/reject')
+  rejectOperator(@Param('id') id: string) {
+    return this.adminService.rejectOperator(id);
   }
 
   @Get('stats')

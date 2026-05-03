@@ -12,6 +12,8 @@ import { UploadsModule } from './uploads/uploads.module';
 import { AdminModule } from './admin/admin.module';
 import { MailModule } from './common/mail/mail.module';
 
+import { SubscriptionsModule } from './subscriptions/subscriptions.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -28,6 +30,7 @@ import { MailModule } from './common/mail/mail.module';
     UploadsModule,
     AdminModule,
     MailModule,
+    SubscriptionsModule,
   ],
   controllers: [],
   providers: [],

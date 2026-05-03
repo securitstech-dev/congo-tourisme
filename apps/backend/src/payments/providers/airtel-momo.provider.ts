@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PaymentProvider, PaymentResponse } from './payment-provider.interface';
 
 @Injectable()
 export class AirtelMomoProvider implements PaymentProvider {
+  private readonly logger = new Logger(AirtelMomoProvider.name);
+
   async processPayment(amount: number, phoneNumber: string, description: string): Promise<PaymentResponse> {
-    console.log(`Processing Airtel Money payment of ${amount} FCFA for ${phoneNumber}`);
+    this.logger.log(`Processing Airtel Money payment of ${amount} FCFA for ${phoneNumber}`);
     
     // Simuler un appel API Airtel
     return {

@@ -52,12 +52,17 @@ model Operator {
   phone             String
   whatsapp          String?
   website           String?
+  rccmNumber        String?          // Registre du Commerce
+  taxId             String?          // NIU (Identification Unique)
+  managerName       String?
+  legalAddress      String?
   isValidated       Boolean          @default(false) // Admin doit valider
   validatedAt       DateTime?
   subscriptionPlan  SubscriptionPlan @default(STARTER)
   subscriptionEnd   DateTime?
   listings          Listing[]
   reservations      Reservation[]
+  subscriptions     Subscription[]   // Historique des abonnements
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
 }
@@ -213,16 +218,19 @@ model Review {
 
 // Abonnements opérateurs
 model Subscription {
-  id          String           @id @default(cuid())
-  operatorId  String
-  plan        SubscriptionPlan
-  amount      Float
-  currency    String           @default("XAF")
-  startDate   DateTime
-  endDate     DateTime
-  isActive    Boolean          @default(true)
-  stripeSubId String?
-  createdAt   DateTime         @default(now())
+  id            String           @id @default(cuid())
+  operatorId    String
+  operator      Operator         @relation(fields: [operatorId], references: [id])
+  plan          SubscriptionPlan
+  amount        Float
+  currency      String           @default("XAF")
+  paymentStatus PaymentStatus    @default(UNPAID) // Statut du paiement de l'abonnement
+  startDate     DateTime
+  endDate       DateTime
+  isActive      Boolean          @default(true)
+  stripeSubId   String?
+  mobileMoneyRef String?
+  createdAt     DateTime         @default(now())
 }
 
 // Tokens de refresh JWT

@@ -59,7 +59,6 @@ export class ChatbotService {
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.error('Groq API Error:', errorData);
         throw new Error(`Groq API returned ${response.status}`);
       }
 
@@ -67,7 +66,6 @@ export class ChatbotService {
       return { response: data.choices[0].message.content };
       
     } catch (error) {
-      console.error('Chatbot Error:', error);
       throw new InternalServerErrorException('Erreur lors de la communication avec Kongo.');
     }
   }

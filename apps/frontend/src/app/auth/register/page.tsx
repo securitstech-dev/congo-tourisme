@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -16,16 +16,21 @@ const registerSchema = z.object({
   email: z.string().email('Email invalide'),
   password: z.string().min(8, 'Le mot de passe doit faire au moins 8 caractères'),
   role: z.enum(['TOURIST', 'OPERATOR']).default('TOURIST'),
+  plan: z.string().optional(),
 });
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialRole = (searchParams.get('role') as 'TOURIST' | 'OPERATOR') || 'TOURIST';
+  const initialPlan = searchParams.get('plan') || undefined;
+
   const setAuth = useAuthStore((state) => state.setAuth);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedRole, setSelectedRole] = useState<'TOURIST' | 'OPERATOR'>('TOURIST');
+  const [selectedRole, setSelectedRole] = useState<'TOURIST' | 'OPERATOR'>(initialRole);
 
   const {
     register,
@@ -35,7 +40,8 @@ export default function RegisterPage() {
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema) as any,
     defaultValues: {
-      role: 'TOURIST'
+      role: initialRole,
+      plan: initialPlan
     }
   });
 

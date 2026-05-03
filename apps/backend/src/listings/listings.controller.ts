@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards, Req, Param } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards, Req, Param, Patch, Delete } from '@nestjs/common';
 import { ListingsService } from './listings.service';
 import { CreateListingDto } from './dto/create-listing.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -27,5 +27,17 @@ export class ListingsController {
   @Get(':id')
   getOne(@Param('id') id: string) {
     return this.listingsService.findOne(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id')
+  update(@Req() req, @Param('id') id: string, @Body() updateData: any) {
+    return this.listingsService.update(req.user.id, id, updateData);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  remove(@Req() req, @Param('id') id: string) {
+    return this.listingsService.remove(req.user.id, id);
   }
 }

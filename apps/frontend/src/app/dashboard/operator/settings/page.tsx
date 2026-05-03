@@ -45,11 +45,37 @@ export default function OperatorSettingsPage() {
             </div>
           </div>
 
+          {/* Subscription Management */}
+          <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm border-l-4 border-l-secondary">
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h3 className="text-lg font-bold flex items-center gap-2">
+                  <CreditCard className="w-5 h-5 text-secondary" />
+                  Gérer mon Abonnement
+                </h3>
+                <p className="text-xs text-subtext mt-1">Gérez votre pack et visualisez vos factures.</p>
+              </div>
+              <span className="px-3 py-1 bg-secondary/10 text-secondary rounded-lg text-xs font-black uppercase tracking-wider">Plan Business</span>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-accent/30 rounded-2xl border border-primary/10">
+              <div>
+                <p className="text-[10px] font-bold text-subtext uppercase tracking-widest">Date de renouvellement</p>
+                <p className="text-lg font-black text-foreground">12 Juin 2026</p>
+                <p className="text-xs text-subtext mt-1 italic">Renouvellement automatique par Mobile Money</p>
+              </div>
+              <div className="flex flex-col gap-2">
+                <button className="bg-primary text-white text-xs font-bold py-3 rounded-xl hover:opacity-90 transition-all">Changer de Pack</button>
+                <button className="text-primary text-[10px] font-bold hover:underline">Accéder à l'historique des factures (PDF)</button>
+              </div>
+            </div>
+          </div>
+
           {/* Payment Methods */}
           <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm">
             <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
-              <CreditCard className="w-5 h-5 text-secondary" />
-              Réception des Paiements
+              <CreditCard className="w-5 h-5 text-primary" />
+              Réception des Paiements Clients
             </h3>
             <div className="space-y-4">
               <div className="p-4 bg-green-50 border border-green-100 rounded-2xl flex items-center justify-between">

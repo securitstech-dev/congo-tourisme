@@ -8,10 +8,15 @@ interface User {
   lastName: string;
   role: string;
   avatarUrl?: string;
-  operatorData?: {
+  operator?: {
+    id: string;
+    businessName: string;
     isValidated: boolean;
     subscriptionEnd: string | null;
     subscriptionPlan: string;
+  };
+  tourist?: {
+    id: string;
   };
 }
 
@@ -33,7 +38,10 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       setAuth: (user, accessToken, refreshToken) => 
         set({ user, accessToken, refreshToken, isAuthenticated: true }),
-      logout: () => set({ user: null, accessToken: null, refreshToken: null, isAuthenticated: false }),
+      logout: () => {
+        set({ user: null, accessToken: null, refreshToken: null, isAuthenticated: false });
+        localStorage.removeItem('auth-storage');
+      },
     }),
     {
       name: 'auth-storage',

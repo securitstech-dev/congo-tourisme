@@ -103,7 +103,7 @@ export default function OperatorLayout({
 
         {/* Page Body */}
         <div className="flex-1 overflow-y-auto p-8 relative">
-          {(!user?.operatorData?.isValidated) && (
+          {(!user?.operator?.isValidated) && (
             <div className="absolute inset-0 z-50 bg-white/80 backdrop-blur-md flex flex-col items-center justify-center">
               <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md text-center border border-gray-100">
                 <div className="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -116,7 +116,7 @@ export default function OperatorLayout({
             </div>
           )}
           
-          {(user?.operatorData?.isValidated && user?.operatorData?.subscriptionEnd && new Date(user.operatorData.subscriptionEnd) < new Date()) && (
+          {(user?.operator?.isValidated && user?.operator?.subscriptionEnd && new Date(user.operator.subscriptionEnd) < new Date()) && (
             <div className="absolute inset-0 z-50 bg-white/80 backdrop-blur-md flex flex-col items-center justify-center">
               <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md text-center border border-gray-100">
                 <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">

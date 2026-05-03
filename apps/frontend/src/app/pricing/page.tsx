@@ -110,17 +110,72 @@ export default function PricingPage() {
               </ul>
 
               <Link 
-                href="/auth/register"
+                href={`/auth/register?role=OPERATOR&plan=${plan.name.toUpperCase().replace(' ', '_')}`}
                 className={`w-full py-4 rounded-2xl font-bold text-center block transition-all ${
                   plan.popular 
-                    ? 'bg-primary text-white shadow-lg shadow-primary/20 hover:opacity-90' 
-                    : 'bg-accent/30 text-foreground hover:bg-accent/50'
+                    ? 'bg-primary text-white shadow-lg shadow-primary/20 hover:scale-[1.02]' 
+                    : 'bg-accent text-primary hover:bg-accent/80'
                 }`}
               >
                 {plan.cta}
               </Link>
             </div>
           ))}
+        </div>
+
+        <div className="mt-20">
+          <h2 className="text-3xl font-black text-center mb-12">Comparatif détaillé des fonctionnalités</h2>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse bg-white rounded-[32px] overflow-hidden shadow-sm border border-gray-100">
+              <thead>
+                <tr className="bg-gray-50/50">
+                  <th className="p-6 text-sm font-black uppercase tracking-wider text-subtext">Fonctionnalité</th>
+                  <th className="p-6 text-sm font-black uppercase tracking-wider text-primary">Découverte</th>
+                  <th className="p-6 text-sm font-black uppercase tracking-wider text-secondary">Business</th>
+                  <th className="p-6 text-sm font-black uppercase tracking-wider text-foreground">Prestige</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                <tr>
+                  <td className="p-6 font-bold">Nombre d'annonces</td>
+                  <td className="p-6 text-subtext">Jusqu'à 3</td>
+                  <td className="p-6 text-primary font-black">Illimité</td>
+                  <td className="p-6 text-primary font-black">Illimité</td>
+                </tr>
+                <tr>
+                  <td className="p-6 font-bold">Commission sur réservation</td>
+                  <td className="p-6 text-subtext">12%</td>
+                  <td className="p-6 text-secondary font-black">8%</td>
+                  <td className="p-6 text-foreground font-black">5%</td>
+                </tr>
+                <tr>
+                  <td className="p-6 font-bold">Visibilité moteur de recherche</td>
+                  <td className="p-6 text-subtext">Standard</td>
+                  <td className="p-6 text-secondary font-black">Prioritaire</td>
+                  <td className="p-6 text-foreground font-black">Maximale + Accueil</td>
+                </tr>
+                <tr>
+                  <td className="p-6 font-bold">Statistiques avancées</td>
+                  <td className="p-6 text-gray-300">Non disponible</td>
+                  <td className="p-6 text-green-500 font-black">Inclus</td>
+                  <td className="p-6 text-green-500 font-black">Inclus + Rapports mensuels</td>
+                </tr>
+                <tr>
+                  <td className="p-6 font-bold">Support client</td>
+                  <td className="p-6 text-subtext">Email (48h)</td>
+                  <td className="p-6 text-secondary font-black">Prioritaire 24/7</td>
+                  <td className="p-6 text-foreground font-black">Ligne directe dédiée</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="mt-12 p-6 bg-accent/30 rounded-2xl border border-primary/10 text-center">
+          <p className="text-sm text-primary font-medium">
+            * Tous les prix sont indiqués en Francs CFA (XAF) et sont <span className="font-bold underline">Hors Taxes</span>. La TVA de 18% s'applique conformément à la législation fiscale de la République du Congo.
+            Les factures sont émises par Securits Tech (Pointe-Noire).
+          </p>
         </div>
 
         <div className="mt-20 bg-white rounded-[40px] p-12 border border-gray-100 shadow-sm text-center">

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateListingDto } from './dto/create-listing.dto';
 import { OperatorsService } from '../operators/operators.service';
@@ -12,19 +12,10 @@ export class ListingsService {
 
   async create(userId: string, createListingDto: CreateListingDto) {
     const { images, ...listingData } = createListingDto;
-    let operator = await this.operatorsService.findByUserId(userId);
+    const operator = await this.operatorsService.findByUserId(userId);
     
     if (!operator) {
-      operator = await this.operatorsService.create({
-        userId,
-        businessName: 'Nouvel Établissement',
-        businessType: 'OTHER',
-        description: 'À renseigner',
-        region: 'Pointe-Noire',
-        city: 'Pointe-Noire',
-        address: 'À renseigner',
-        phone: '000000000',
-      });
+      throw new ForbiddenException("Vous devez avoir un profil opérateur pour créer une annonce.");
     }
 
     return this.prisma.listing.create({
@@ -38,15 +29,18 @@ export class ListingsService {
           }))
         } : undefined
       },
+      include: { images: true }
     });
   }
 
   async findAll() {
     return this.prisma.listing.findMany({
+      where: { deletedAt: null },
       include: {
         images: true,
         operator: true,
       },
+      orderBy: { createdAt: 'desc' }
     });
   }
 
@@ -55,10 +49,11 @@ export class ListingsService {
     if (!operator) return [];
 
     return this.prisma.listing.findMany({
-      where: { operatorId: operator.id },
+      where: { operatorId: operator.id, deletedAt: null },
       include: {
         images: true,
       },
+      orderBy: { createdAt: 'desc' }
     });
   }
 
@@ -74,7 +69,48 @@ export class ListingsService {
       },
     });
 
-    if (!listing) throw new NotFoundException('Annonce introuvable');
+    if (!listing || listing.deletedAt) throw new NotFoundException('Annonce introuvable');
     return listing;
+  }
+
+  async update(userId: string, id: string, data: any) {
+    const operator = await this.operatorsService.findByUserId(userId);
+    const listing = await this.prisma.listing.findUnique({ where: { id } });
+
+    if (!listing) throw new NotFoundException('Annonce introuvable');
+    if (listing.operatorId !== operator?.id) throw new ForbiddenException("Action non autorisée.");
+
+    const { images, ...updateData } = data;
+
+    // Gestion des images si fournies
+    if (images) {
+      await this.prisma.listingImage.deleteMany({ where: { listingId: id } });
+      updateData.images = {
+        create: images.map(img => ({
+          url: img.url,
+          cloudinaryId: img.cloudinaryId,
+        }))
+      };
+    }
+
+    return this.prisma.listing.update({
+      where: { id },
+      data: updateData,
+      include: { images: true }
+    });
+  }
+
+  async remove(userId: string, id: string) {
+    const operator = await this.operatorsService.findByUserId(userId);
+    const listing = await this.prisma.listing.findUnique({ where: { id } });
+
+    if (!listing) throw new NotFoundException('Annonce introuvable');
+    if (listing.operatorId !== operator?.id) throw new ForbiddenException("Action non autorisée.");
+
+    // Soft delete
+    return this.prisma.listing.update({
+      where: { id },
+      data: { deletedAt: new Date() }
+    });
   }
 }

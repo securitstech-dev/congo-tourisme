@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 
+import { PrismaService } from '../prisma/prisma.service';
 import { MailService } from '../common/mail/mail.service';
 
 @Injectable()
@@ -13,6 +14,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private mailService: MailService,
+    private prisma: PrismaService,
   ) {}
 
   async register(registerDto: RegisterDto) {
@@ -29,6 +31,23 @@ export class AuthService {
       lastName: registerDto.lastName,
       role: registerDto.role || 'TOURIST',
     });
+
+    // Si c'est un opérateur, on crée son profil de base
+    if (user.role === 'OPERATOR') {
+      await this.prisma.operator.create({
+        data: {
+          userId: user.id,
+          businessName: `${user.firstName} ${user.lastName}`, // Placeholder
+          businessType: 'OTHER',
+          description: 'Nouveau profil opérateur à compléter.',
+          region: 'Congo',
+          city: 'À préciser',
+          address: 'À préciser',
+          phone: '',
+          subscriptionPlan: registerDto.plan as any || 'STARTER',
+        },
+      });
+    }
 
     await this.mailService.sendWelcomeEmail(user.email, user.firstName);
 
