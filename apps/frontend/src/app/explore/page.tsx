@@ -237,8 +237,9 @@ function ExploreContent() {
                       {isAuthenticated ? (
                         <>
                           <div>
-                            <p className="text-xs text-subtext font-bold uppercase tracking-tighter">À partir de</p>
-                            <p className="text-xl lg:text-2xl font-black text-primary">{item.price?.toLocaleString()} <span className="text-xs font-bold">FCFA</span></p>
+                            <p className="text-xl lg:text-2xl font-black text-primary">
+                              {(item.pricePerNight ?? item.pricePerPerson ?? item.priceFlatRate ?? 0).toLocaleString()} <span className="text-xs font-bold">FCFA</span>
+                            </p>
                           </div>
                           <Link 
                             href={`/explore/${item.id}`}

@@ -43,7 +43,7 @@ export default function MapView({ listings }: { listings: any[] }) {
               <img src={listing.images?.[0]?.url} className="w-full h-24 object-cover rounded-t-xl mb-2" />
               <h3 className="font-bold text-sm text-foreground">{listing.title}</h3>
               <p className="text-xs text-primary font-bold mt-1">
-                {(listing.pricePerNight || listing.pricePerPerson || listing.priceFlatRate || 0).toLocaleString()} FCFA
+                {(listing.pricePerNight ?? listing.pricePerPerson ?? listing.priceFlatRate ?? 0).toLocaleString()} FCFA
               </p>
             </div>
           </Popup>
