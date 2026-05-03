@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards, Req, Param, Patch, Delete } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards, Req, Param, Patch, Delete, Query } from '@nestjs/common';
 import { ListingsService } from './listings.service';
 import { CreateListingDto } from './dto/create-listing.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -8,8 +8,18 @@ export class ListingsController {
   constructor(private listingsService: ListingsService) {}
 
   @Get()
-  getAll() {
-    return this.listingsService.findAll();
+  getAll(
+    @Query('type') type?: string,
+    @Query('minPrice') minPrice?: string,
+    @Query('maxPrice') maxPrice?: string,
+    @Query('rating') rating?: string,
+  ) {
+    return this.listingsService.findAll({
+      type,
+      minPrice: minPrice ? parseInt(minPrice) : undefined,
+      maxPrice: maxPrice ? parseInt(maxPrice) : undefined,
+      rating: rating ? parseFloat(rating) : undefined,
+    });
   }
 
   @UseGuards(JwtAuthGuard)

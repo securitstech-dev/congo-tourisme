@@ -43,58 +43,31 @@ function ExploreContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid');
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(1000000);
+  const [minRating, setMinRating] = useState(0);
 
   useEffect(() => {
     const fetchListings = async () => {
       setIsLoading(true);
       try {
-        const query = categoryParam ? `?type=${categoryParam}` : '';
-        const response = await api.get(`/listings${query}`);
-        if (response.data && response.data.length > 0) {
-          setListings(response.data);
-        } else {
-          throw new Error("Empty data, fallback to mock");
-        }
+        const params = new URLSearchParams();
+        if (categoryParam) params.append('type', categoryParam);
+        if (minPrice > 0) params.append('minPrice', minPrice.toString());
+        if (maxPrice < 1000000) params.append('maxPrice', maxPrice.toString());
+        if (minRating > 0) params.append('rating', minRating.toString());
+
+        const response = await api.get(`/listings?${params.toString()}`);
+        setListings(response.data);
       } catch (error) {
-        console.log('Utilisation de données fictives pour la démo');
-        const mockListings = [
-          {
-            id: '1',
-            title: 'Hôtel Atlantic Palace',
-            type: 'Hébergement',
-            location: 'Centre-ville, Pointe-Noire',
-            price: 75000,
-            images: [{ url: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=600' }]
-          },
-          {
-            id: '2',
-            title: 'VIP Lounge Club',
-            type: 'NIGHTCLUB',
-            location: 'Côte Sauvage, Pointe-Noire',
-            price: 15000,
-            images: [{ url: 'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&q=80&w=600' }]
-          },
-          {
-            id: '3',
-            title: 'Excursion Gorges de Diosso',
-            type: 'LEISURE_ACTIVITY',
-            location: 'Diosso, Kouilou',
-            price: 25000,
-            images: [{ url: 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&q=80&w=600' }]
-          }
-        ];
-        
-        if (categoryParam) {
-          setListings(mockListings.filter(l => l.type === categoryParam));
-        } else {
-          setListings(mockListings);
-        }
+        console.error('Erreur lors de la récupération des annonces:', error);
+        setListings([]);
       } finally {
         setIsLoading(false);
       }
     };
     fetchListings();
-  }, [categoryParam]);
+  }, [categoryParam, minPrice, maxPrice, minRating]);
 
   const categories = [
     { icon: MapIcon, label: 'Tout', type: '' },
@@ -164,14 +137,22 @@ function ExploreContent() {
             <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-6">
               <div>
                 <h3 className="font-bold text-foreground mb-4 flex items-center justify-between">
-                  Fourchette de prix
-                  <ChevronDown className="w-4 h-4 text-subtext" />
+                  Prix max
+                  <span className="text-primary text-xs font-black">{maxPrice.toLocaleString()} FCFA</span>
                 </h3>
                 <div className="space-y-4">
-                  <input type="range" className="w-full accent-primary" />
+                  <input 
+                    type="range" 
+                    min="0"
+                    max="1000000"
+                    step="10000"
+                    value={maxPrice}
+                    onChange={(e) => setMaxPrice(parseInt(e.target.value))}
+                    className="w-full accent-primary" 
+                  />
                   <div className="flex justify-between text-xs font-bold text-subtext">
                     <span>0 FCFA</span>
-                    <span>500.000 FCFA+</span>
+                    <span>1.000.000+</span>
                   </div>
                 </div>
               </div>
@@ -179,12 +160,24 @@ function ExploreContent() {
               <div className="pt-6 border-t border-gray-50">
                 <h3 className="font-bold text-foreground mb-4">Note minimale</h3>
                 <div className="space-y-2">
-                  {[4, 3, 2].map((star) => (
+                  {[4, 3, 2, 0].map((star) => (
                     <label key={star} className="flex items-center gap-3 cursor-pointer group">
-                      <input type="checkbox" className="w-5 h-5 rounded-lg border-gray-200 text-primary focus:ring-primary" />
+                      <input 
+                        type="radio" 
+                        name="rating"
+                        checked={minRating === star}
+                        onChange={() => setMinRating(star)}
+                        className="w-5 h-5 rounded-full border-gray-200 text-primary focus:ring-primary" 
+                      />
                       <div className="flex items-center gap-1">
-                        <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                        <span className="text-sm font-medium text-subtext group-hover:text-primary">{star}+ étoiles</span>
+                        {star > 0 ? (
+                          <>
+                            <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                            <span className="text-sm font-medium text-subtext group-hover:text-primary">{star}+ étoiles</span>
+                          </>
+                        ) : (
+                          <span className="text-sm font-medium text-subtext group-hover:text-primary">Toutes les notes</span>
+                        )}
                       </div>
                     </label>
                   ))}

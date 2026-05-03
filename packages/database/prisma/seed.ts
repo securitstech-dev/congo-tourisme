@@ -1,158 +1,201 @@
 import { PrismaClient, UserRole, BusinessType, SubscriptionPlan, ListingType } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Début du seed de la base de données...');
+  console.log('🌱 Début du nettoyage et du seed professionnel...');
 
-  // Nettoyage optionnel (à utiliser avec précaution)
-  // await prisma.listingImage.deleteMany();
-  // await prisma.listing.deleteMany();
-  // await prisma.operator.deleteMany();
-  // await prisma.user.deleteMany();
+  // 0. Nettoyage complet
+  await prisma.review.deleteMany();
+  await prisma.payment.deleteMany();
+  await prisma.reservation.deleteMany();
+  await prisma.listingImage.deleteMany();
+  await prisma.listing.deleteMany();
+  await prisma.operatorDocument.deleteMany();
+  await prisma.operator.deleteMany();
+  await prisma.user.deleteMany();
 
-  // 1. Création de l'Administrateur
-  const admin = await prisma.user.upsert({
-    where: { email: 'admin@congo-tourisme.cg' },
-    update: {},
-    create: {
+  const passwordHash = await bcrypt.hash('Congo2026!', 10);
+
+  // 1. Création de l'Administrateur (Securits Tech)
+  const admin = await prisma.user.create({
+    data: {
       email: 'admin@congo-tourisme.cg',
-      firstName: 'Super',
-      lastName: 'Admin',
+      firstName: 'Admin',
+      lastName: 'Securits Tech',
       role: UserRole.ADMIN,
       isVerified: true,
       isActive: true,
-      // Mot de passe : "Congo2026!"
-      passwordHash: '$2b$10$mZWW2C7HQbADbcwigHHgAOpDLfwwcfIUgaC0ijPF.fWsgzusNrG6.', 
+      passwordHash,
     },
   });
-  console.log(`✅ Admin créé : ${admin.email}`);
+  console.log('✅ Admin créé');
 
-  // 2. Création de l'Opérateur
-  const operatorUser = await prisma.user.upsert({
-    where: { email: 'operator@congo-tourisme.cg' },
-    update: {},
-    create: {
-      email: 'operator@congo-tourisme.cg',
-      firstName: 'Jean',
-      lastName: 'Dupont',
-      role: UserRole.OPERATOR,
-      isVerified: true,
-      isActive: true,
-      passwordHash: '$2b$10$mZWW2C7HQbADbcwigHHgAOpDLfwwcfIUgaC0ijPF.fWsgzusNrG6.',
-    },
-  });
-
-  const operator = await prisma.operator.upsert({
-    where: { userId: operatorUser.id },
-    update: {},
-    create: {
-      userId: operatorUser.id,
-      businessName: 'Congo Discoveries SA',
-      businessType: BusinessType.OTHER,
-      description: 'Agence multi-services proposant les meilleures expériences touristiques, hôtelières et événementielles au Congo.',
+  // 2. Définition des Opérateurs
+  const operatorsData = [
+    {
+      email: 'hotel.brazza@example.com',
+      firstName: 'Directeur',
+      lastName: 'Grand Hôtel',
+      businessName: 'Grand Hôtel de Brazza',
+      type: BusinessType.HOTEL,
       region: 'Brazzaville',
       city: 'Brazzaville',
-      address: 'Centre-ville, Avenue Foch',
-      phone: '061234567',
-      whatsapp: '061234567',
-      isValidated: true,
-      validatedAt: new Date(),
-      subscriptionPlan: SubscriptionPlan.PREMIUM,
-      subscriptionEnd: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
-    },
-  });
-  console.log(`✅ Opérateur créé : ${operator.businessName}`);
-
-  // 3. Création d'un Touriste
-  const tourist = await prisma.user.upsert({
-    where: { email: 'tourist@example.com' },
-    update: {},
-    create: {
-      email: 'tourist@example.com',
-      firstName: 'Alice',
-      lastName: 'Martin',
-      role: UserRole.TOURIST,
-      isVerified: true,
-      isActive: true,
-      passwordHash: '$2b$10$mZWW2C7HQbADbcwigHHgAOpDLfwwcfIUgaC0ijPF.fWsgzusNrG6.',
-    },
-  });
-  console.log(`✅ Touriste créé : ${tourist.email}`);
-
-  // 4. Création des Annonces (Listings)
-  const listings = [
-    {
-      title: 'Safari au Parc National d\'Odzala-Kokoua',
-      description: 'Découvrez la forêt tropicale vierge, rencontrez les gorilles des plaines de l\'Ouest et les éléphants de forêt. Une expérience inoubliable au cœur du bassin du Congo. Hébergement en lodge de luxe et safaris guidés inclus.',
-      listingType: ListingType.EXCURSION,
-      pricePerPerson: 1500000,
-      amenities: ['Guide professionnel', 'Hébergement', 'Repas inclus', 'Transferts'],
-      images: [
-        'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&q=80&w=1000',
-        'https://images.unsplash.com/photo-1542401886-65d6c61db217?auto=format&fit=crop&q=80&w=1000'
+      description: 'Le fleuron de l\'hôtellerie congolaise avec vue panoramique sur le fleuve Congo.',
+      image: 'https://images.unsplash.com/photo-1542314831-c6a4d14d8c53?q=80&w=1000',
+      listings: [
+        {
+          title: 'Suite Diplomatique avec Vue Fleuve',
+          type: ListingType.HOTEL_SUITE,
+          price: 185000,
+          amenities: ['Wi-Fi VIP', 'Petit-déjeuner inclus', 'Piscine', 'Navette Aéroport'],
+          img: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?q=80&w=1000'
+        }
       ]
     },
     {
-      title: 'Suite Royale - Grand Hôtel de Kintélé',
-      description: 'Profitez d\'une vue imprenable sur le fleuve Congo dans notre Suite Royale. Un luxe absolu avec service d\'étage 24/7, accès privilégié au spa et à la piscine à débordement.',
-      listingType: ListingType.HOTEL_SUITE,
-      pricePerNight: 250000,
-      amenities: ['Climatisation', 'Wi-Fi très haut débit', 'Piscine', 'Service d\'étage', 'Spa'],
-      images: [
-        'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&q=80&w=1000',
-        'https://images.unsplash.com/photo-1542314831-c6a4d14d8c53?auto=format&fit=crop&q=80&w=1000'
+      email: 'mami.wata@example.com',
+      firstName: 'Chef',
+      lastName: 'Mami Wata',
+      businessName: 'Mami Wata Riverside',
+      type: BusinessType.RESTAURANT,
+      region: 'Brazzaville',
+      city: 'Brazzaville',
+      description: 'Une expérience gastronomique unique sur les rives du majestueux fleuve Congo.',
+      image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=1000',
+      listings: [
+        {
+          title: 'Table VIP Coucher de Soleil',
+          type: ListingType.RESTAURANT_TABLE,
+          price: 35000,
+          amenities: ['Vue panoramique', 'Cocktail de bienvenue', 'Accès Ponton'],
+          img: 'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?q=80&w=1000'
+        }
       ]
     },
     {
-      title: 'Dîner Gastronomique - Mami Wata',
-      description: 'Dégustez les meilleures spécialités locales et internationales sur notre terrasse flottante sur le majestueux fleuve Congo. Une ambiance romantique parfaite pour vos soirées.',
-      listingType: ListingType.RESTAURANT_TABLE,
-      pricePerPerson: 45000,
-      amenities: ['Vue sur le fleuve', 'Musique live', 'Parking sécurisé', 'Air conditionné'],
-      images: [
-        'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=1000',
-        'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&q=80&w=1000'
+      email: 'atlantic.palace@example.com',
+      firstName: 'Gérant',
+      lastName: 'Atlantic',
+      businessName: 'Atlantic Palace - Pointe-Noire',
+      type: BusinessType.HOTEL,
+      region: 'Pointe-Noire',
+      city: 'Pointe-Noire',
+      description: 'Luxe et confort au bord de l\'Océan Atlantique pour vos séjours d\'affaires.',
+      image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?q=80&w=1000',
+      listings: [
+        {
+          title: 'Chambre Executive Ocean View',
+          type: ListingType.HOTEL_ROOM,
+          price: 145000,
+          amenities: ['Balcon privé', 'Spa accès libre', 'Gym 24h/7'],
+          img: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?q=80&w=1000'
+        }
       ]
     },
     {
-      title: 'Soirée VIP - Boîte de Nuit "Le M"',
-      description: 'L\'expérience nocturne ultime à Brazzaville. Réservation de table VIP avec bouteille incluse. Système son de pointe, jeux de lumières époustouflants et les meilleurs DJs de la capitale.',
-      listingType: ListingType.NIGHTCLUB_ENTRY,
-      priceFlatRate: 100000,
-      amenities: ['Accès VIP', 'Bouteille incluse', 'Espace privé', 'Sécurité renforcée'],
-      images: [
-        'https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&q=80&w=1000',
-        'https://images.unsplash.com/photo-1574391884720-bbc3740c59d1?auto=format&fit=crop&q=80&w=1000'
+      email: 'safari.odzala@example.com',
+      firstName: 'Guide',
+      lastName: 'Odzala',
+      businessName: 'Safari Congo Odzala',
+      type: BusinessType.TOURIST_SITE,
+      region: 'Cuvette-Ouest',
+      city: 'Odzala',
+      description: 'Immersion totale dans la forêt tropicale à la rencontre des gorilles.',
+      image: 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?q=80&w=1000',
+      listings: [
+        {
+          title: 'Expédition Gorilles (3 jours)',
+          type: ListingType.EXCURSION,
+          price: 950000,
+          amenities: ['Hébergement en Lodge', 'Tous repas inclus', 'Guide naturaliste'],
+          img: 'https://images.unsplash.com/photo-1542401886-65d6c61db217?q=80&w=1000'
+        }
+      ]
+    },
+    {
+      email: 'cercle.civilise@example.com',
+      firstName: 'Responsable',
+      lastName: 'Cercle',
+      businessName: 'Le Cercle Civilisé',
+      type: BusinessType.EVENT_HALL,
+      region: 'Brazzaville',
+      city: 'Brazzaville',
+      description: 'Le lieu de prestige pour tous vos mariages, conférences et soirées gala.',
+      image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=1000',
+      listings: [
+        {
+          title: 'Grande Salle Cristal (800 places)',
+          type: ListingType.EVENT_HALL_RENTAL,
+          price: 1200000,
+          amenities: ['Sonorisation complète', 'Climatisation centrale', 'Service de sécurité'],
+          img: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=1000'
+        }
       ]
     }
   ];
 
-  for (const item of listings) {
-    const listing = await prisma.listing.create({
+  for (const op of operatorsData) {
+    // Créer le compte utilisateur
+    const user = await prisma.user.create({
       data: {
-        operatorId: operator.id,
-        title: item.title,
-        description: item.description,
-        listingType: item.listingType,
-        pricePerNight: item.pricePerNight,
-        pricePerPerson: item.pricePerPerson,
-        priceFlatRate: item.priceFlatRate,
-        amenities: item.amenities,
-        isFeatured: true,
-        images: {
-          create: item.images.map((url, index) => ({
-            url: url,
-            cloudinaryId: `seed_image_${index}`,
-            order: index
-          }))
-        }
+        email: op.email,
+        firstName: op.firstName,
+        lastName: op.lastName,
+        role: UserRole.OPERATOR,
+        isVerified: true,
+        isActive: true,
+        passwordHash,
       }
     });
-    console.log(`✅ Annonce créée : ${listing.title}`);
+
+    // Créer le profil opérateur
+    const operator = await prisma.operator.create({
+      data: {
+        userId: user.id,
+        businessName: op.businessName,
+        businessType: op.type,
+        description: op.description,
+        region: op.region,
+        city: op.city,
+        address: 'Quartier Administratif',
+        phone: '066000000',
+        latitude: op.city === 'Brazzaville' ? -4.263 + (Math.random() * 0.01) : -4.769 + (Math.random() * 0.01),
+        longitude: op.city === 'Brazzaville' ? 15.283 + (Math.random() * 0.01) : 11.866 + (Math.random() * 0.01),
+        isValidated: true,
+        validatedAt: new Date(),
+        subscriptionPlan: SubscriptionPlan.PREMIUM,
+        subscriptionEnd: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+        logoUrl: op.image,
+      }
+    });
+
+    // Créer les annonces pour cet opérateur
+    for (const list of op.listings) {
+      await prisma.listing.create({
+        data: {
+          operatorId: operator.id,
+          title: list.title,
+          description: `Découvrez une prestation exceptionnelle chez ${op.businessName}. Qualité et service garantis au meilleur prix à ${op.city}.`,
+          listingType: list.type,
+          pricePerNight: list.type.includes('HOTEL') ? list.price : null,
+          pricePerPerson: list.type === ListingType.RESTAURANT_TABLE || list.type === ListingType.EXCURSION ? list.price : null,
+          priceFlatRate: list.type === ListingType.EVENT_HALL_RENTAL ? list.price : null,
+          amenities: list.amenities,
+          isFeatured: true,
+          images: {
+            create: [
+              { url: list.img, cloudinaryId: `seed_${Date.now()}`, order: 0 }
+            ]
+          }
+        }
+      });
+    }
+    console.log(`✅ Opérateur & Annonces créés : ${op.businessName}`);
   }
 
-  console.log('🎉 Seed terminé avec succès !');
+  console.log('🎉 Seed professionnel terminé avec succès !');
 }
 
 main()

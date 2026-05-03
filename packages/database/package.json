@@ -14,12 +14,14 @@
     "seed": "ts-node prisma/seed.ts"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/node": "^20.19.39",
     "prisma": "^6.2.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@prisma/client": "^6.2.1"
+    "@prisma/client": "^6.2.1",
+    "bcrypt": "^5.1.1"
   }
 }

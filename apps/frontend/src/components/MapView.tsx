@@ -18,31 +18,33 @@ const customIcon = new L.Icon({
 
 export default function MapView({ listings }: { listings: any[] }) {
   // Default to Pointe-Noire or Brazzaville if no listings
-  const center = listings.length > 0 && listings[0].lat && listings[0].lng
-    ? [listings[0].lat, listings[0].lng]
+  const center = listings.length > 0 && listings[0].operator?.latitude && listings[0].operator?.longitude
+    ? [listings[0].operator.latitude, listings[0].operator.longitude]
     : [-4.769, 11.866]; // Pointe-Noire
 
   return (
     <MapContainer 
       center={center as [number, number]} 
-      zoom={12} 
+      zoom={13} 
       className="w-full h-full rounded-[32px] shadow-sm border border-gray-100 z-0"
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {listings.filter(l => l.lat && l.lng).map((listing) => (
+      {listings.filter(l => l.operator?.latitude && l.operator?.longitude).map((listing) => (
         <Marker 
           key={listing.id} 
-          position={[listing.lat, listing.lng]}
+          position={[listing.operator.latitude, listing.operator.longitude]}
           icon={customIcon}
         >
           <Popup className="rounded-xl overflow-hidden">
-            <div className="font-sans">
-              <img src={listing.images?.[0]?.url || 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=600'} className="w-full h-24 object-cover rounded-t-xl mb-2" />
+            <div className="font-sans min-w-[150px]">
+              <img src={listing.images?.[0]?.url} className="w-full h-24 object-cover rounded-t-xl mb-2" />
               <h3 className="font-bold text-sm text-foreground">{listing.title}</h3>
-              <p className="text-xs text-primary font-bold mt-1">{listing.price.toLocaleString()} FCFA</p>
+              <p className="text-xs text-primary font-bold mt-1">
+                {(listing.pricePerNight || listing.pricePerPerson || listing.priceFlatRate || 0).toLocaleString()} FCFA
+              </p>
             </div>
           </Popup>
         </Marker>

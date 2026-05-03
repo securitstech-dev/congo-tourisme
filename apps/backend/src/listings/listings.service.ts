@@ -33,9 +33,41 @@ export class ListingsService {
     });
   }
 
-  async findAll() {
+  async findAll(filters?: { 
+    type?: string, 
+    minPrice?: number, 
+    maxPrice?: number, 
+    rating?: number 
+  }) {
+    const where: any = { deletedAt: null };
+
+    if (filters?.type) {
+      // Mapping des types simplifiés du front vers les enums Prisma
+      const typeMapping: any = {
+        'HOTEL': 'HOTEL',
+        'RESTAURANT': 'RESTAURANT',
+        'NIGHTCLUB': 'BAR_NIGHTCLUB',
+        'SITE': 'TOURIST_SITE',
+      };
+      
+      const mappedType = typeMapping[filters.type] || filters.type;
+      where.operator = { businessType: mappedType };
+    }
+
+    if (filters?.minPrice || filters?.maxPrice) {
+      where.OR = [
+        { pricePerNight: { gte: filters.minPrice, lte: filters.maxPrice } },
+        { pricePerPerson: { gte: filters.minPrice, lte: filters.maxPrice } },
+        { priceFlatRate: { gte: filters.minPrice, lte: filters.maxPrice } },
+      ];
+    }
+
+    if (filters?.rating) {
+      where.rating = { gte: filters.rating };
+    }
+
     return this.prisma.listing.findMany({
-      where: { deletedAt: null },
+      where,
       include: {
         images: true,
         operator: true,

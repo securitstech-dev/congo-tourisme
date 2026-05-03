@@ -21,8 +21,13 @@ import {
   Bot
 } from 'lucide-react';
 import Link from 'next/link';
-import api from '@/lib/api';
-import { useAuthStore } from '@/store/authStore';
+import dynamic from 'next/dynamic';
+
+// Dynamically import MapView to avoid SSR issues
+const MapView = dynamic(() => import('@/components/MapView'), {
+  ssr: false,
+  loading: () => <div className="w-full h-full min-h-[300px] flex items-center justify-center bg-gray-50 rounded-3xl border border-gray-100"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>
+});
 
 export default function ListingDetailsPage() {
   const { id } = useParams();
@@ -189,11 +194,27 @@ export default function ListingDetailsPage() {
 
           {/* About */}
           <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-foreground">À propos de ce lieu</h2>
+            <h2 className="text-2xl font-bold text-foreground uppercase tracking-tight">À propos de ce lieu</h2>
             <p className="text-lg text-subtext leading-relaxed">
               {listing.description}
             </p>
           </div>
+
+          {/* History of Operator */}
+          {listing.operator?.description && (
+            <div className="bg-accent/5 p-8 rounded-[40px] border border-gray-100 space-y-4">
+              <h3 className="text-xl font-black text-foreground">Histoire de l'établissement</h3>
+              <p className="text-subtext leading-relaxed italic">
+                {listing.operator.description}
+              </p>
+              <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
+                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                  <CheckCircle2 className="w-5 h-5 text-secondary" />
+                </div>
+                <p className="text-xs font-bold text-subtext uppercase tracking-widest">Établissement certifié par Securits Tech</p>
+              </div>
+            </div>
+          )}
 
           {/* Amenities */}
           <div className="space-y-6">
@@ -212,14 +233,11 @@ export default function ListingDetailsPage() {
 
           <div className="h-px bg-gray-100"></div>
 
-          {/* Location Map Placeholder */}
+          {/* Location Map */}
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-foreground">Localisation</h2>
-            <div className="h-[300px] bg-accent/20 rounded-3xl overflow-hidden relative border border-gray-100">
-               <div className="absolute inset-0 flex items-center justify-center text-subtext/40 flex-col gap-4">
-                 <MapPin className="w-12 h-12 opacity-20" />
-                 <p className="font-bold">Carte interactive bientôt disponible (Leaflet)</p>
-               </div>
+            <div className="h-[400px] w-full relative">
+               <MapView listings={[listing]} />
             </div>
           </div>
 
@@ -352,7 +370,7 @@ export default function ListingDetailsPage() {
               </div>
               <div className="p-4 border border-gray-100 rounded-3xl bg-accent/10 flex items-center justify-between">
                  <div>
-                   <p className="text-[10px] font-bold text-subtext uppercase tracking-widest">Voyageurs</p>
+                   <p className="text-[10px] font-bold text-subtext uppercase tracking-widest">Visiteurs</p>
                    <p className="font-bold text-sm">{bookingData.adults} Adulte{bookingData.adults > 1 ? 's' : ''}</p>
                  </div>
                  <div className="flex items-center gap-2">
