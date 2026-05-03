@@ -43,4 +43,13 @@ export class AdminController {
   getStats() {
     return this.adminService.getGlobalStats();
   }
+  @Get('finance/summary')
+  getFinancialSummary() {
+    return this.adminService.getFinancialSummary();
+  }
+
+  @Patch('operators/manual')
+  createManualRegistration(@Body() body: any) {
+    return this.adminService.createManualRegistration(body);
+  }
 }

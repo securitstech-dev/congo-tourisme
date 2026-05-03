@@ -144,4 +144,159 @@ export class AdminService {
       recentPayments,
     };
   }
+
+  async getFinancialSummary() {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    // Prix des plans en FCFA
+    const PLAN_PRICES: Record<string, number> = {
+      STARTER: 15000,
+      PROFESSIONAL: 45000,
+      PREMIUM: 120000,
+    };
+
+    // Opérateurs avec abonnement actif
+    const activeOperators = await this.prisma.operator.findMany({
+      where: {
+        isValidated: true,
+        subscriptionEnd: { gte: now },
+      },
+      select: {
+        id: true,
+        businessName: true,
+        subscriptionPlan: true,
+        subscriptionEnd: true,
+        subscriptionStart: true,
+        city: true,
+        user: { select: { email: true } },
+      },
+    });
+
+    // Opérateurs expirés
+    const expiredCount = await this.prisma.operator.count({
+      where: {
+        isValidated: true,
+        subscriptionEnd: { lt: now },
+      },
+    });
+
+    // MRR calculé depuis les abonnements actifs
+    const mrr = activeOperators.reduce((sum, op) => {
+      return sum + (PLAN_PRICES[op.subscriptionPlan || 'STARTER'] || 0);
+    }, 0);
+
+    // ARR projeté
+    const arr = mrr * 12;
+
+    // Répartition par plan
+    const planBreakdown = Object.keys(PLAN_PRICES).map((plan) => ({
+      plan,
+      count: activeOperators.filter((o) => o.subscriptionPlan === plan).length,
+      revenue: activeOperators
+        .filter((o) => o.subscriptionPlan === plan)
+        .reduce((s) => s + PLAN_PRICES[plan], 0),
+    }));
+
+    // Revenus mensuels sur les 12 derniers mois (simulés depuis subscriptions actives)
+    const last12Months = Array.from({ length: 12 }, (_, i) => {
+      const d = new Date(now.getFullYear(), now.getMonth() - (11 - i), 1);
+      return {
+        month: d.toLocaleDateString('fr-FR', { month: 'short', year: '2-digit' }),
+        year: d.getFullYear(),
+        monthNum: d.getMonth(),
+      };
+    });
+
+    const revenueByMonth = await Promise.all(
+      last12Months.map(async (m) => {
+        const start = new Date(m.year, m.monthNum, 1);
+        const end = new Date(m.year, m.monthNum + 1, 0, 23, 59, 59);
+
+        const active = await this.prisma.operator.count({
+          where: {
+            isValidated: true,
+            subscriptionStart: { lte: end },
+            subscriptionEnd: { gte: start },
+          },
+        });
+
+        // Estimation revenue basée sur le nombre d'actifs × prix moyen
+        const avgPrice = activeOperators.length > 0 ? mrr / activeOperators.length : 0;
+        return {
+          month: m.month,
+          revenue: Math.round(active * avgPrice),
+          operators: active,
+        };
+      })
+    );
+
+    // Abonnements récents (nouveaux ce mois-ci)
+    const newThisMonth = await this.prisma.operator.findMany({
+      where: {
+        isValidated: true,
+        validatedAt: { gte: startOfMonth },
+      },
+      select: {
+        businessName: true,
+        subscriptionPlan: true,
+        city: true,
+        validatedAt: true,
+        user: { select: { email: true } },
+      },
+      orderBy: { validatedAt: 'desc' },
+      take: 10,
+    });
+
+    return {
+      mrr,
+      arr,
+      activeCount: activeOperators.length,
+      expiredCount,
+      planBreakdown,
+      revenueByMonth,
+      newThisMonth,
+      activeOperators,
+    };
+  }
+
+  async createManualRegistration(data: any) {
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: data.email },
+    });
+
+    if (existingUser) {
+      throw new Error('Un compte avec cet email existe déjà.');
+    }
+
+    const user = await this.prisma.user.create({
+      data: {
+        email: data.email,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phone: data.phone,
+        role: 'OPERATOR',
+        password: 'MANUAL_REGISTRATION_PENDING', 
+        isActive: true,
+      },
+    });
+
+    const operator = await this.prisma.operator.create({
+      data: {
+        userId: user.id,
+        businessName: data.businessName,
+        businessType: data.businessType,
+        region: data.region,
+        city: data.city,
+        address: data.address,
+        phone: data.businessPhone || data.phone,
+        rccmNumber: data.rccmNumber,
+        taxId: data.taxId,
+        isValidated: false, 
+        subscriptionPlan: data.subscriptionPlan || 'STARTER',
+      },
+    });
+
+    return { user, operator };
+  }
 }
