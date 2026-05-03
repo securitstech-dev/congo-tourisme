@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Patch, Param, UseGuards, Body } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -27,8 +27,16 @@ export class AdminController {
   }
 
   @Patch('operators/:id/reject')
-  rejectOperator(@Param('id') id: string) {
-    return this.adminService.rejectOperator(id);
+  rejectOperator(@Param('id') id: string, @Body() body: { reason?: string }) {
+    return this.adminService.rejectOperator(id, body.reason);
+  }
+
+  @Patch('documents/:docId/status')
+  updateDocumentStatus(
+    @Param('docId') docId: string,
+    @Body() body: { status: string; reason?: string }
+  ) {
+    return this.adminService.updateDocumentStatus(docId, body.status as any, body.reason);
   }
 
   @Get('stats')

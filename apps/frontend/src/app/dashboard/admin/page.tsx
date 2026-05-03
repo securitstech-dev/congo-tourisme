@@ -5,7 +5,8 @@ import {
   Users, Building2, CalendarCheck, TrendingUp,
   Clock, CheckCircle, XCircle, Loader2,
   ShieldCheck, Settings, Bell, CreditCard,
-  BadgeCheck, AlertCircle
+  BadgeCheck, AlertCircle, FileSearch, Eye,
+  ChevronRight, Download
 } from 'lucide-react';
 import api from '@/lib/api';
 import { format } from 'date-fns';
@@ -20,6 +21,8 @@ export default function AdminDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [selectedOperator, setSelectedOperator] = useState<any>(null);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -69,6 +72,29 @@ export default function AdminDashboard() {
       alert('Erreur lors du rejet.');
     } finally {
       setActionLoading(null);
+    }
+  };
+
+  const handleUpdateDocStatus = async (docId: string, status: 'APPROVED' | 'REJECTED', reason?: string) => {
+    try {
+      await api.patch(`/admin/documents/${docId}/status`, { status, reason });
+      // Mettre à jour localement l'opérateur sélectionné
+      setSelectedOperator((prev: any) => ({
+        ...prev,
+        documents: prev.documents.map((d: any) => d.id === docId ? { ...d, status, rejectionReason: reason } : d)
+      }));
+      // Mettre à jour aussi dans la liste principale
+      setPendingOperators(prev => prev.map(op => {
+        if (op.documents?.some((d: any) => d.id === docId)) {
+          return {
+            ...op,
+            documents: op.documents.map((d: any) => d.id === docId ? { ...d, status, rejectionReason: reason } : d)
+          };
+        }
+        return op;
+      }));
+    } catch (error) {
+      alert("Erreur lors de la mise à jour du document.");
     }
   };
 
@@ -185,21 +211,22 @@ export default function AdminDashboard() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => { setSelectedOperator(op); setIsReviewModalOpen(true); }}
+                          className="flex items-center gap-1 px-4 py-2 bg-accent/20 text-foreground text-xs font-bold rounded-xl hover:bg-accent/40 transition-all"
+                        >
+                          <FileSearch className="w-4 h-4" /> Voir le dossier
+                        </button>
                         {actionLoading === op.id ? (
                           <Loader2 className="w-5 h-5 animate-spin text-primary" />
                         ) : (
                           <>
                             <button
                               onClick={() => handleValidate(op.id)}
-                              className="flex items-center gap-1 px-4 py-2 bg-green-50 text-green-700 text-xs font-bold rounded-xl hover:bg-green-100 transition-all border border-green-100"
+                              disabled={!op.documents?.every((d: any) => d.status === 'APPROVED')}
+                              className="flex items-center gap-1 px-4 py-2 bg-green-50 text-green-700 text-xs font-bold rounded-xl hover:bg-green-100 transition-all border border-green-100 disabled:opacity-30"
                             >
-                              <CheckCircle className="w-4 h-4" /> Valider
-                            </button>
-                            <button
-                              onClick={() => handleReject(op.id)}
-                              className="flex items-center gap-1 px-4 py-2 bg-red-50 text-red-600 text-xs font-bold rounded-xl hover:bg-red-100 transition-all border border-red-100"
-                            >
-                              <XCircle className="w-4 h-4" /> Rejeter
+                              <CheckCircle className="w-4 h-4" /> Valider l'accès
                             </button>
                           </>
                         )}
@@ -398,6 +425,125 @@ export default function AdminDashboard() {
               </table>
             </div>
           )}
+        </div>
+      )}
+
+      {/* MODALE DE REVUE DE DOSSIER */}
+      {isReviewModalOpen && selectedOperator && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-5xl max-h-[90vh] rounded-[40px] shadow-2xl overflow-hidden flex flex-col">
+            <div className="p-8 border-b border-gray-100 flex items-center justify-between bg-accent/5">
+              <div>
+                <h2 className="text-2xl font-black text-foreground">Étude du dossier : {selectedOperator.businessName}</h2>
+                <p className="text-subtext text-sm">Vérifiez la validité des documents avant de valider l'essai de 14 jours.</p>
+              </div>
+              <button 
+                onClick={() => setIsReviewModalOpen(false)}
+                className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center hover:bg-red-50 hover:text-red-500 transition-all shadow-sm"
+              >
+                <XCircle className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-8">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Infos Gérant */}
+                <div className="lg:col-span-1 space-y-6">
+                  <div className="bg-gray-50 p-6 rounded-3xl border border-gray-100">
+                    <h3 className="font-black text-sm uppercase tracking-widest text-subtext mb-4">Informations Gérant</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <p className="text-[10px] font-bold text-subtext uppercase">Nom du Gérant</p>
+                        <p className="font-bold text-foreground">{selectedOperator.managerName || 'Non renseigné'}</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold text-subtext uppercase">Téléphone / WhatsApp</p>
+                        <p className="font-bold text-foreground">{selectedOperator.phone}</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold text-subtext uppercase">Adresse Légale</p>
+                        <p className="text-sm font-medium text-foreground">{selectedOperator.legalAddress || 'Non renseignée'}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-primary/5 p-6 rounded-3xl border border-primary/10">
+                    <h3 className="font-black text-sm text-primary mb-2">Décision Finale</h3>
+                    <p className="text-xs text-subtext mb-4">Une fois tous les documents approuvés, vous pourrez valider l'accès de l'opérateur.</p>
+                    <button
+                      onClick={() => { handleValidate(selectedOperator.id); setIsReviewModalOpen(false); }}
+                      disabled={!selectedOperator.documents?.every((d: any) => d.status === 'APPROVED')}
+                      className="w-full bg-primary text-white py-4 rounded-2xl font-black shadow-lg shadow-primary/20 disabled:opacity-30 transition-all flex items-center justify-center gap-2"
+                    >
+                      <BadgeCheck className="w-5 h-5" /> Valider l'Opérateur
+                    </button>
+                  </div>
+                </div>
+
+                {/* Documents */}
+                <div className="lg:col-span-2 space-y-4">
+                  <h3 className="font-black text-sm uppercase tracking-widest text-subtext px-2">Pièces Justificatives</h3>
+                  <div className="grid grid-cols-1 gap-3">
+                    {selectedOperator.documents?.length === 0 ? (
+                      <div className="p-10 text-center bg-orange-50 rounded-3xl border border-orange-100">
+                        <AlertCircle className="w-10 h-10 text-orange-400 mx-auto mb-2" />
+                        <p className="font-bold text-orange-700">Aucun document téléversé pour le moment.</p>
+                      </div>
+                    ) : (
+                      selectedOperator.documents.map((doc: any) => (
+                        <div key={doc.id} className="p-4 bg-white border border-gray-100 rounded-2xl flex items-center justify-between hover:shadow-md transition-all">
+                          <div className="flex items-center gap-4">
+                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                              doc.status === 'APPROVED' ? 'bg-green-100 text-green-600' : 
+                              doc.status === 'REJECTED' ? 'bg-red-100 text-red-600' : 'bg-accent/10 text-primary'
+                            }`}>
+                              <FileText className="w-5 h-5" />
+                            </div>
+                            <div>
+                              <p className="font-bold text-sm text-foreground">{doc.type}</p>
+                              <p className="text-[10px] text-subtext uppercase font-bold tracking-tighter">Statut : {doc.status}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <a 
+                              href={doc.url} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="p-2 bg-gray-50 text-subtext rounded-lg hover:bg-primary hover:text-white transition-all"
+                              title="Voir le document"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </a>
+                            {doc.status === 'PENDING' && (
+                              <>
+                                <button 
+                                  onClick={() => handleUpdateDocStatus(doc.id, 'APPROVED')}
+                                  className="p-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-600 hover:text-white transition-all"
+                                  title="Approuver"
+                                >
+                                  <CheckCircle className="w-4 h-4" />
+                                </button>
+                                <button 
+                                  onClick={() => {
+                                    const reason = prompt('Motif du rejet :');
+                                    if (reason) handleUpdateDocStatus(doc.id, 'REJECTED', reason);
+                                  }}
+                                  className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-all"
+                                  title="Rejeter"
+                                >
+                                  <XCircle className="w-4 h-4" />
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

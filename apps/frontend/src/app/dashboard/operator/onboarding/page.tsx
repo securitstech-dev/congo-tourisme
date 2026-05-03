@@ -29,6 +29,18 @@ const onboardingSchema = z.object({
   region: z.string().min(2, "La région est requise"),
 });
 
+const REQUIRED_DOCS = [
+  { id: 'RCCM', label: 'Registre du Commerce (RCCM)' },
+  { id: 'SCIET', label: 'Certificat SCIET' },
+  { id: 'SCIEN', label: 'Certificat SCIEN' },
+  { id: 'SAFETY_QUITUS', label: 'Quitus Sapeurs-Pompiers' },
+  { id: 'MANAGER_ID', label: 'CNI du Gérant (Recto/Verso)' },
+  { id: 'NATIONALITY_CERT', label: 'Certificat de Nationalité' },
+  { id: 'TAX_PAYMENT', label: 'Dernier Quitus Fiscal' },
+  { id: 'MUNICIPAL_AUTH', label: 'Autorisation de la Mairie' },
+  { id: 'MINISTRY_AUTH', label: 'Autorisation Ministère de Tutelle' },
+];
+
 type OnboardingValues = z.infer<typeof onboardingSchema>;
 
 export default function OperatorOnboarding() {
@@ -42,6 +54,10 @@ export default function OperatorOnboarding() {
   });
 
   const onSubmit = async (data: OnboardingValues) => {
+    if (uploadedDocs.length < REQUIRED_DOCS.length) {
+      alert("Veuillez télécharger tous les documents obligatoires avant de soumettre.");
+      return;
+    }
     setIsLoading(true);
     try {
       // 1. Mettre à jour le profil opérateur
@@ -51,7 +67,7 @@ export default function OperatorOnboarding() {
       });
 
       // 2. Passer à l'étape succès
-      setStep(3);
+      setStep(4);
     } catch (error) {
       alert("Une erreur est survenue lors de l'enregistrement de votre dossier.");
     } finally {
@@ -59,7 +75,28 @@ export default function OperatorOnboarding() {
     }
   };
 
-  if (step === 3) {
+  const [uploadedDocs, setUploadedDocs] = useState<string[]>([]);
+  const [uploadingDoc, setUploadingDoc] = useState<string | null>(null);
+
+  const handleFileUpload = async (type: string, file: File) => {
+    setUploadingDoc(type);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('type', type);
+
+    try {
+      await api.post('/operators/documents/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setUploadedDocs(prev => [...prev, type]);
+    } catch (error) {
+      alert("Erreur lors du téléchargement du document.");
+    } finally {
+      setUploadingDoc(null);
+    }
+  };
+
+  if (step === 4) {
     return (
       <div className="max-w-2xl mx-auto py-20 text-center">
         <div className="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner">
@@ -93,18 +130,18 @@ export default function OperatorOnboarding() {
         </div>
       </div>
 
-      <div className="flex items-center gap-4 mb-10">
-        {[1, 2].map((i) => (
-          <div key={i} className="flex items-center gap-2">
+      <div className="flex items-center gap-4 mb-10 overflow-x-auto pb-4 no-scrollbar">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="flex items-center gap-2 shrink-0">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
               step === i ? 'bg-primary text-white' : step > i ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-400'
             }`}>
               {step > i ? <CheckCircle2 className="w-4 h-4" /> : i}
             </div>
-            <span className={`text-sm font-bold ${step === i ? 'text-foreground' : 'text-subtext'}`}>
-              {i === 1 ? 'Documents Légaux' : 'Plan d\'abonnement'}
+            <span className={`text-sm font-bold whitespace-nowrap ${step === i ? 'text-foreground' : 'text-subtext'}`}>
+              {i === 1 ? 'Infos Légales' : i === 2 ? 'Documents' : 'Abonnement'}
             </span>
-            {i === 1 && <div className="w-12 h-[2px] bg-gray-100 mx-2" />}
+            {i < 3 && <div className="w-8 h-[2px] bg-gray-100 mx-2" />}
           </div>
         ))}
       </div>
@@ -207,15 +244,15 @@ export default function OperatorOnboarding() {
             <div className="bg-foreground text-white rounded-[40px] p-10 shadow-2xl relative overflow-hidden">
                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                   <div>
-                    <h3 className="text-2xl font-black mb-2">Prêt pour l'étape suivante ?</h3>
-                    <p className="text-white/60 font-medium">Nous allons maintenant configurer votre abonnement.</p>
+                    <h3 className="text-2xl font-black mb-2">Presque terminé...</h3>
+                    <p className="text-white/60 font-medium">L'étape suivante est cruciale : vos pièces justificatives.</p>
                   </div>
                   <button 
                     type="button"
                     onClick={() => setStep(2)}
                     className="bg-primary text-white px-10 py-5 rounded-[24px] font-black shadow-xl shadow-primary/20 hover:scale-105 transition-all"
                   >
-                    Continuer
+                    Suivant : Documents
                   </button>
                </div>
                <ShieldCheck className="absolute -right-10 -bottom-10 w-48 h-48 text-white/5" />
@@ -224,6 +261,70 @@ export default function OperatorOnboarding() {
         )}
 
         {step === 2 && (
+          <div className="space-y-8">
+            <div className="bg-white rounded-[40px] p-10 border border-gray-100 shadow-sm">
+              <h2 className="text-2xl font-black mb-6 text-foreground flex items-center gap-3">
+                <FileText className="w-7 h-7 text-primary" />
+                Dossier Administratif (Congo)
+              </h2>
+              <p className="text-subtext mb-10 font-medium">
+                Conformément à la réglementation nationale, veuillez joindre les documents suivants en format Image ou PDF.
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {REQUIRED_DOCS.map((doc) => (
+                  <div key={doc.id} className={`p-6 rounded-3xl border-2 transition-all ${
+                    uploadedDocs.includes(doc.id) ? 'border-green-100 bg-green-50' : 'border-dashed border-gray-100 bg-gray-50'
+                  }`}>
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-xs font-black text-subtext uppercase tracking-widest">{doc.label}</span>
+                      {uploadedDocs.includes(doc.id) && <CheckCircle2 className="w-5 h-5 text-green-500" />}
+                    </div>
+                    
+                    <label className="relative flex items-center justify-center p-4 bg-white rounded-2xl border border-gray-100 cursor-pointer hover:bg-accent/10 transition-all group">
+                      <input 
+                        type="file" 
+                        className="absolute inset-0 opacity-0 cursor-pointer"
+                        onChange={(e) => e.target.files?.[0] && handleFileUpload(doc.id, e.target.files[0])}
+                        disabled={uploadingDoc === doc.id}
+                      />
+                      {uploadingDoc === doc.id ? (
+                        <Loader2 className="w-5 h-5 animate-spin text-primary" />
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <Upload className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
+                          <span className="text-sm font-bold text-foreground">
+                            {uploadedDocs.includes(doc.id) ? 'Remplacer le fichier' : 'Télécharger'}
+                          </span>
+                        </div>
+                      )}
+                    </label>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-10 flex gap-4">
+                <button 
+                  type="button"
+                  onClick={() => setStep(1)}
+                  className="flex-1 py-5 rounded-2xl font-bold text-subtext hover:bg-gray-50 transition-all"
+                >
+                  Retour
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => setStep(3)}
+                  disabled={uploadedDocs.length < REQUIRED_DOCS.length}
+                  className="flex-[2] bg-primary text-white py-5 rounded-[24px] font-black shadow-xl shadow-primary/20 disabled:opacity-50"
+                >
+                  Suivant : Pack & Essai
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {step === 3 && (
           <div className="space-y-12">
             <h2 className="text-3xl font-black text-center text-foreground">Choisissez votre formule</h2>
             

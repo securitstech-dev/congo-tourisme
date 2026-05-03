@@ -20,6 +20,27 @@ export class OperatorsService {
     return this.prisma.operator.update({ where: { id }, data });
   }
 
+  async uploadDocument(operatorId: string, type: any, url: string, cloudinaryId: string) {
+    return this.prisma.operatorDocument.upsert({
+      where: {
+        // Un opérateur ne peut avoir qu'un seul document actif par type
+        // Note: Prisma ne supporte pas l'upsert sur un couple de champs sans index unique
+        // On va utiliser create si inexistant ou update
+        id: (await this.prisma.operatorDocument.findFirst({
+          where: { operatorId, type }
+        }))?.id || 'new-id'
+      },
+      update: { url, cloudinaryId, status: 'PENDING' },
+      create: {
+        operatorId,
+        type,
+        url,
+        cloudinaryId,
+        status: 'PENDING'
+      }
+    });
+  }
+
   /**
    * Calcule les statistiques réelles de l'opérateur pour son dashboard
    */

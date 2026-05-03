@@ -56,8 +56,14 @@ model Operator {
   taxId             String?          // NIU (Identification Unique)
   managerName       String?
   legalAddress      String?
-  isValidated       Boolean          @default(false) // Admin doit valider
+  isValidated       Boolean          @default(false) // Admin doit valider après étude du dossier
   validatedAt       DateTime?
+  
+  // Gestion de la conformité et essai
+  documents         OperatorDocument[]
+  trialEndsAt       DateTime?        // Date de fin des 14 jours d'essai
+  isTrialUsed       Boolean          @default(false)
+  
   subscriptionPlan  SubscriptionPlan @default(STARTER)
   subscriptionEnd   DateTime?
   listings          Listing[]
@@ -65,6 +71,38 @@ model Operator {
   subscriptions     Subscription[]   // Historique des abonnements
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
+}
+
+model OperatorDocument {
+  id              String         @id @default(cuid())
+  operatorId      String
+  operator        Operator       @relation(fields: [operatorId], references: [id])
+  type            DocumentType
+  url             String         // Lien Cloudinary
+  cloudinaryId    String
+  status          DocumentStatus @default(PENDING)
+  rejectionReason String?        // Motif si le document est rejeté
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+enum DocumentType {
+  RCCM
+  SCIET
+  SCIEN
+  SAFETY_QUITUS      // Sapeurs pompiers
+  MANAGER_ID         // CNI
+  NATIONALITY_CERT   // Certificat de nationalité
+  TAX_PAYMENT        // Paiement impôts
+  MUNICIPAL_AUTH     // Autorisation Mairie
+  MINISTRY_AUTH      // Autorisation Ministère de tutelle
+  OTHER
+}
+
+enum DocumentStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 enum BusinessType {

@@ -1,15 +1,22 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { MailService } from '../common/mail/mail.service';
 import { PaymentStatus } from '@prisma/client';
 
 @Injectable()
 export class AdminService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private mailService: MailService
+  ) {}
 
   async getPendingOperators() {
     return this.prisma.operator.findMany({
       where: { isValidated: false },
-      include: { user: true },
+      include: { 
+        user: true,
+        documents: true
+      },
       orderBy: { createdAt: 'desc' },
     });
   }
@@ -22,13 +29,44 @@ export class AdminService {
   }
 
   async validateOperator(id: string) {
-    return this.prisma.operator.update({
+    const trialEndsAt = new Date();
+    trialEndsAt.setDate(trialEndsAt.getDate() + 14); // 14 jours d'essai
+
+    const operator = await this.prisma.operator.update({
       where: { id },
-      data: { isValidated: true, validatedAt: new Date() },
+      data: { 
+        isValidated: true, 
+        validatedAt: new Date(),
+        trialEndsAt,
+        isTrialUsed: true,
+        subscriptionPlan: 'STARTER' // Plan par défaut pour l'essai
+      },
+      include: { user: true }
+    });
+
+    // Envoyer l'email de confirmation
+    if (operator.user?.email) {
+      await this.mailService.sendOperatorValidationEmail(
+        operator.user.email,
+        operator.businessName,
+        trialEndsAt
+      );
+    }
+
+    return operator;
+  }
+
+  async updateDocumentStatus(docId: string, status: any, reason?: string) {
+    return this.prisma.operatorDocument.update({
+      where: { id: docId },
+      data: { 
+        status, 
+        rejectionReason: reason 
+      },
     });
   }
 
-  async rejectOperator(id: string) {
+  async rejectOperator(id: string, reason: string = "Dossier incomplet ou non conforme.") {
     // Soft-delete via désactivation du compte utilisateur lié
     const operator = await this.prisma.operator.findUnique({
       where: { id },
@@ -40,6 +78,15 @@ export class AdminService {
       where: { id: operator.userId },
       data: { isActive: false },
     });
+
+    // Envoyer l'email de rejet
+    if (operator.user?.email) {
+      await this.mailService.sendOperatorRejectionEmail(
+        operator.user.email,
+        operator.businessName,
+        reason
+      );
+    }
 
     return { message: 'Opérateur rejeté et compte désactivé.' };
   }
