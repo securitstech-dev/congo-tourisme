@@ -134,8 +134,9 @@ export default function OperatorOnboarding() {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setUploadedDocs(prev => [...prev, type]);
-    } catch (error) {
-      alert("Erreur lors du téléchargement du document.");
+    } catch (error: any) {
+      const message = error.response?.data?.message || error.message || "Erreur inconnue";
+      alert(`Erreur lors du téléchargement : ${message}`);
     } finally {
       setUploadingDoc(null);
     }
