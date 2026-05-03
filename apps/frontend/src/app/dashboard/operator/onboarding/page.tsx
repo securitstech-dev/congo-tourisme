@@ -20,6 +20,10 @@ import api from '@/lib/api';
 
 const onboardingSchema = z.object({
   businessName: z.string().min(3, "Le nom de l'établissement est requis"),
+  businessType: z.enum(['HOTEL', 'RESTAURANT', 'CASINO', 'EVENT_HALL', 'TOURIST_SITE', 'TRAVEL_AGENCY', 'BAR_NIGHTCLUB', 'SPA_WELLNESS', 'LODGE_CAMP', 'OTHER'], {
+    errorMap: () => ({ message: "Le type d'établissement est requis" })
+  }),
+  description: z.string().min(10, "Une courte description (10 caractères min) est requise"),
   rccmNumber: z.string().min(5, "Le numéro RCCM est requis"),
   taxId: z.string().min(5, "Le numéro NIU est requis"),
   legalAddress: z.string().min(10, "L'adresse légale est requise"),
@@ -109,8 +113,10 @@ export default function OperatorOnboarding() {
     setIsLoading(true);
     try {
       // 1. Mettre à jour le profil opérateur
+      const { legalAddress, ...rest } = data;
       await api.patch('/operators/profile', {
-        ...data,
+        ...rest,
+        address: legalAddress,
         subscriptionPlan: selectedPlan,
       });
 
@@ -240,6 +246,38 @@ export default function OperatorOnboarding() {
                         placeholder="N° NIU"
                       />
                     </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-xs font-black text-subtext uppercase tracking-widest">Type d'établissement</label>
+                    <select 
+                      {...register('businessType')}
+                      className="w-full px-6 py-4 bg-accent/10 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 font-bold text-foreground"
+                    >
+                      <option value="">Sélectionnez un type</option>
+                      <option value="HOTEL">Hôtel / Hébergement</option>
+                      <option value="RESTAURANT">Restaurant / Gastronomie</option>
+                      <option value="BAR_NIGHTCLUB">Bar / Boîte de nuit</option>
+                      <option value="TOURIST_SITE">Site Touristique</option>
+                      <option value="TRAVEL_AGENCY">Agence de Voyage</option>
+                      <option value="EVENT_HALL">Salle de Fête / Événement</option>
+                      <option value="SPA_WELLNESS">Bien-être / SPA</option>
+                      <option value="CASINO">Casino / Jeux</option>
+                      <option value="LODGE_CAMP">Lodge / Campement</option>
+                      <option value="OTHER">Autre</option>
+                    </select>
+                    {errors.businessType && <p className="text-red-500 text-[10px] font-bold">{errors.businessType.message as string}</p>}
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-xs font-black text-subtext uppercase tracking-widest">Description courte</label>
+                    <textarea 
+                      {...register('description')}
+                      rows={2}
+                      className="w-full px-6 py-4 bg-accent/10 border-none rounded-2xl focus:ring-2 focus:ring-primary/20 font-bold resize-none"
+                      placeholder="Décrivez votre établissement en quelques mots..."
+                    />
+                    {errors.description && <p className="text-red-500 text-[10px] font-bold">{errors.description.message as string}</p>}
                   </div>
 
                   <div className="space-y-2">
