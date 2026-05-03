@@ -38,15 +38,20 @@ export class OperatorsController {
     @UploadedFile() file: Express.Multer.File,
     @Body('type') type: string
   ) {
-    const operator = await this.operatorsService.findByUserId(req.user.id);
-    if (!operator) throw new NotFoundException('Opérateur non trouvé');
+    try {
+      const operator = await this.operatorsService.findByUserId(req.user.id);
+      if (!operator) throw new NotFoundException('Opérateur non trouvé');
 
-    const result = await this.cloudinaryService.uploadFile(file, 'operators/documents');
-    return this.operatorsService.uploadDocument(
-      operator.id,
-      type as any,
-      result.url,
-      result.public_id
-    );
+      const result = await this.cloudinaryService.uploadFile(file, 'operators/documents');
+      return this.operatorsService.uploadDocument(
+        operator.id,
+        type as any,
+        result.url,
+        result.public_id
+      );
+    } catch (error) {
+      console.error('ERREUR UPLOAD DOCUMENT:', error);
+      throw error;
+    }
   }
 }
