@@ -4,15 +4,17 @@ import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { 
-  LayoutDashboard, 
+  LayoutDashboard as Layout, 
   Users, 
   FileCheck, 
   BarChart3, 
   Settings, 
   LogOut, 
   Bell,
-  ShieldCheck,
-  Building2
+  ShieldCheck as Shield,
+  Building2,
+  CreditCard,
+  BookOpen
 } from 'lucide-react';
 import Link from 'next/link';
 
