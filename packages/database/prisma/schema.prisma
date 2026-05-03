@@ -205,15 +205,23 @@ enum PaymentMethod {
 
 // Avis et notations
 model Review {
-  id        String   @id @default(cuid())
-  listingId String
-  listing   Listing  @relation(fields: [listingId], references: [id])
-  authorId  String
-  author    User     @relation(fields: [authorId], references: [id])
-  rating    Int      // 1 à 5
-  comment   String   @db.Text
-  isVisible Boolean  @default(true)
-  createdAt DateTime @default(now())
+  id                String       @id @default(cuid())
+  listingId         String
+  listing           Listing      @relation(fields: [listingId], references: [id])
+  authorId          String
+  author            User         @relation(fields: [authorId], references: [id])
+  rating            Int          // 1 à 5
+  comment           String       @db.Text
+  status            ReviewStatus @default(PENDING)
+  moderationComment String?      @db.Text // Commentaire auto de Kongo si besoin
+  isVisible         Boolean      @default(true)
+  createdAt         DateTime     @default(now())
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 // Abonnements opérateurs

@@ -12,6 +12,7 @@ import {
   LogOut, 
   Bell,
   User as UserIcon,
+  MessageSquare,
   Landmark,
   Receipt
 } from 'lucide-react';
@@ -39,6 +40,7 @@ export default function OperatorLayout({
     { icon: LayoutDashboard, label: 'Vue d\'ensemble', href: '/dashboard/operator' },
     { icon: Store, label: 'Mes Annonces', href: '/dashboard/operator/listings' },
     { icon: CalendarCheck, label: 'Réservations', href: '/dashboard/operator/reservations' },
+    { icon: MessageSquare, label: 'Commentaires', href: '/dashboard/operator/reviews' },
     { icon: BarChart3, label: 'Statistiques', href: '/dashboard/operator/stats' },
     { icon: Receipt, label: 'Facturation', href: '/dashboard/operator/billing' },
     { icon: Settings, label: 'Paramètres', href: '/dashboard/operator/settings' },
@@ -49,10 +51,7 @@ export default function OperatorLayout({
       {/* Sidebar */}
       <aside className="w-64 bg-white border-r border-gray-100 flex flex-col">
         <div className="p-6 flex items-center gap-2">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <Landmark className="text-white w-5 h-5" />
-          </div>
-          <span className="font-bold text-primary">Congo Tourisme</span>
+          <img src="/logo.png" alt="Tourisme Congo" className="h-10 w-auto object-contain" />
         </div>
 
         <nav className="flex-1 px-4 py-4 space-y-1">

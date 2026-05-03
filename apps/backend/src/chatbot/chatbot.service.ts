@@ -120,4 +120,41 @@ export class ChatbotService {
   async deleteKnowledge(id: string) {
     return this.prisma.chatbotKnowledge.delete({ where: { id } });
   }
+
+  // Modération automatique des avis
+  async moderateReview(comment: string) {
+    try {
+      const apiKey = this.configService.get<string>('ANTHROPIC_API_KEY');
+      
+      // Fallback mode démo
+      if (!apiKey || apiKey.length < 10 || apiKey.includes('placeholder')) {
+        const badWords = ['merde', 'con', 'putain', 'salaud', 'idiot'];
+        const isBad = badWords.some(i => comment.toLowerCase().includes(i));
+        return {
+          status: isBad ? 'REJECTED' : 'APPROVED',
+          reason: isBad ? "Le langage utilisé est inapproprié pour la plateforme." : "Conforme."
+        };
+      }
+
+      const systemPrompt = `Tu es "Kongo", modérateur de la plateforme Congo Tourisme. 
+        Vérifie si ce commentaire de voyageur est constructif et poli. 
+        Si c'est une critique (même négative) mais polie, ACCEPTE. 
+        Si c'est une insulte ou du spam, REJETTE.
+        
+        RÉPONDS UNIQUEMENT EN JSON : {"status": "APPROVED" | "REJECTED", "reason": "explication courte"}`;
+
+      const response = await this.anthropic.messages.create({
+        model: 'claude-3-5-sonnet-20240620',
+        max_tokens: 200,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: `Modère ceci : "${comment}"` }],
+      });
+
+      const text = response.content[0].type === 'text' ? (response.content[0] as any).text : '{}';
+      return JSON.parse(text);
+      
+    } catch (error) {
+      return { status: 'APPROVED', reason: 'Approbation automatique (erreur technique).' };
+    }
+  }
 }

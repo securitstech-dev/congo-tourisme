@@ -8,10 +8,11 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           {/* Brand Identity */}
           <div className="space-y-6">
-            <Link href="/" className="text-2xl font-black tracking-tighter flex items-center gap-2">
-              <span className="bg-primary px-2 py-1 rounded-lg text-white">CONGO</span>
-              <span className="text-white">TOURISME</span>
-            </Link>
+            <img 
+              src="/logo.png" 
+              alt="Tourisme Congo" 
+              className="h-10 w-auto object-contain brightness-0 invert" 
+            />
             <p className="text-gray-400 leading-relaxed">
               La plateforme de référence pour découvrir la beauté sauvage et la richesse culturelle de la République du Congo. Une initiative de Securits Tech.
             </p>

@@ -16,7 +16,9 @@ import {
   Wifi,
   Wind,
   Coffee,
-  Tv
+  Tv,
+  MessageSquare,
+  Bot
 } from 'lucide-react';
 import Link from 'next/link';
 import api from '@/lib/api';
@@ -218,6 +220,93 @@ export default function ListingDetailsPage() {
                  <MapPin className="w-12 h-12 opacity-20" />
                  <p className="font-bold">Carte interactive bientôt disponible (Leaflet)</p>
                </div>
+            </div>
+          </div>
+
+          <div className="h-px bg-gray-100"></div>
+
+          {/* Avis et Commentaires */}
+          <div className="space-y-8">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-black text-foreground flex items-center gap-2">
+                <MessageSquare className="w-6 h-6 text-primary" />
+                Avis des voyageurs
+              </h2>
+              <div className="flex items-center gap-2 text-yellow-500 font-bold">
+                <Star className="w-5 h-5 fill-current" />
+                <span className="text-xl">4.9</span>
+                <span className="text-subtext font-medium text-sm">(12 avis)</span>
+              </div>
+            </div>
+
+            {/* Formulaire d'avis */}
+            {isAuthenticated ? (
+              <div className="bg-accent/10 p-8 rounded-[40px] border border-gray-100 space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white">
+                    <Bot className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-foreground">Kongo Modérateur</h4>
+                    <p className="text-[10px] font-black text-subtext uppercase tracking-widest leading-none">Assistant en chef</p>
+                  </div>
+                </div>
+                <p className="text-sm text-subtext font-medium">Laissez votre avis. Kongo le vérifiera instantanément pour s'assurer qu'il est constructif et respectueux.</p>
+                
+                <div className="space-y-4">
+                  <div className="flex gap-2">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <button key={s} className="hover:scale-110 transition-transform">
+                        <Star className={`w-8 h-8 ${s <= 5 ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200'}`} />
+                      </button>
+                    ))}
+                  </div>
+                  <textarea 
+                    placeholder="Comment avez-vous trouvé votre séjour ? Partagez votre expérience..."
+                    className="w-full bg-white border border-gray-100 rounded-3xl p-6 text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none resize-none"
+                    rows={4}
+                  ></textarea>
+                  <button className="bg-primary text-white px-8 py-4 rounded-2xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all">
+                    Publier mon avis
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-accent/10 p-8 rounded-[40px] border border-gray-100 text-center">
+                <p className="text-subtext font-bold mb-4">Connectez-vous pour partager votre expérience.</p>
+                <Link href="/auth/login" className="text-primary font-black uppercase tracking-widest text-xs hover:underline">Se connecter maintenant</Link>
+              </div>
+            )}
+
+            {/* Liste des avis */}
+            <div className="space-y-6 pt-4">
+              {[1, 2].map((i) => (
+                <div key={i} className="p-8 bg-white border border-gray-50 rounded-[40px] shadow-sm space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-accent rounded-full flex items-center justify-center text-primary font-black">J</div>
+                      <div>
+                        <h4 className="font-bold text-foreground">Jean-Paul M.</h4>
+                        <p className="text-[10px] text-subtext font-black uppercase tracking-widest">Voyageur vérifié</p>
+                      </div>
+                    </div>
+                    <div className="flex text-yellow-400">
+                      <Star className="w-4 h-4 fill-current" />
+                      <Star className="w-4 h-4 fill-current" />
+                      <Star className="w-4 h-4 fill-current" />
+                      <Star className="w-4 h-4 fill-current" />
+                      <Star className="w-4 h-4 fill-current" />
+                    </div>
+                  </div>
+                  <p className="text-subtext font-medium leading-relaxed italic">
+                    "Un séjour mémorable. L'accueil était chaleureux et les services à la hauteur de nos attentes. Je recommande vivement pour une expérience authentique au Congo."
+                  </p>
+                  <div className="flex items-center gap-2 text-[10px] font-black text-gray-300 uppercase tracking-widest">
+                    <CheckCircle2 className="w-4 h-4 text-green-500" />
+                    Approuvé par Kongo
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

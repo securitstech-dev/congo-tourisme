@@ -63,10 +63,7 @@ export default function AdminLayout({
       `}>
         <div className="p-6 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-secondary rounded-lg flex items-center justify-center">
-              <Shield className="text-white w-5 h-5" />
-            </div>
-            <span className="font-bold text-foreground">Admin CT</span>
+            <img src="/logo.png" alt="Admin" className="h-10 w-auto object-contain" />
           </div>
           <button 
             className="lg:hidden p-2 text-subtext hover:bg-accent rounded-lg"
