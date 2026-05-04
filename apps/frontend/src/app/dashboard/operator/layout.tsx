@@ -25,11 +25,7 @@ export default function OperatorLayout({
 }) {
   const { user, isAuthenticated, logout } = useAuthStore();
   const router = useRouter();
-  const pathname = usePathname();
-  const [mounted, setMounted] = useState(false);
-
-  // Sécurisation du pathname qui peut être null au premier rendu
-  const isOnboarding = pathname?.includes('/onboarding') ?? false;
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -56,11 +52,31 @@ export default function OperatorLayout({
   ];
 
   return (
-    <div className="flex h-screen bg-accent/20 overflow-hidden">
+    <div className="flex h-screen bg-accent/20 overflow-hidden relative">
+      {/* Overlay mobile */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-100 flex flex-col">
-        <div className="p-6 flex items-center gap-2">
-          <img src="/logo.png" alt="Tourisme Congo" className="h-10 w-auto object-contain" />
+      <aside className={`
+        fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-100 flex flex-col transition-transform duration-300 ease-in-out
+        lg:translate-x-0 lg:static lg:inset-auto
+        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+      `}>
+        <div className="p-6 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <img src="/logo.png" alt="Tourisme Congo" className="h-10 w-auto object-contain" />
+          </div>
+          <button 
+            className="lg:hidden p-2 text-subtext hover:bg-accent rounded-lg"
+            onClick={() => setIsSidebarOpen(false)}
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
         <nav className="flex-1 px-4 py-4 space-y-1">
@@ -68,6 +84,7 @@ export default function OperatorLayout({
             <Link
               key={i}
               href={item.href}
+              onClick={() => setIsSidebarOpen(false)}
               className="flex items-center gap-3 px-4 py-3 text-subtext font-medium rounded-xl hover:bg-accent hover:text-primary transition-all group"
             >
               <item.icon className="w-5 h-5 group-hover:scale-110 transition-transform" />
@@ -90,21 +107,29 @@ export default function OperatorLayout({
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-8">
-          <h2 className="text-xl font-bold text-foreground">Tableau de bord</h2>
+        <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-4 lg:px-8">
+          <div className="flex items-center gap-4">
+            <button 
+              className="lg:hidden p-2 text-subtext hover:bg-accent rounded-lg"
+              onClick={() => setIsSidebarOpen(true)}
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+            <h2 className="text-lg lg:text-xl font-bold text-foreground">Tableau de bord</h2>
+          </div>
           
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3 lg:gap-6">
             <button className="relative p-2 text-subtext hover:bg-accent rounded-full transition-all">
               <Bell className="w-6 h-6" />
               <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
             </button>
             
-            <div className="flex items-center gap-3 pl-6 border-l border-gray-100">
-              <div className="text-right">
-                <p className="text-sm font-bold text-foreground">{user?.firstName} {user?.lastName}</p>
-                <p className="text-xs text-subtext">Opérateur Touristique</p>
+            <div className="flex items-center gap-2 lg:gap-3 pl-3 lg:pl-6 border-l border-gray-100">
+              <div className="text-right hidden sm:block">
+                <p className="text-xs lg:text-sm font-bold text-foreground">{user?.firstName} {user?.lastName}</p>
+                <p className="text-[10px] text-subtext">Opérateur</p>
               </div>
-              <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center text-primary font-bold">
+              <div className="w-8 h-8 lg:w-10 h-10 bg-accent rounded-full flex items-center justify-center text-primary font-bold">
                 {user?.firstName?.charAt(0)}
               </div>
             </div>
@@ -112,39 +137,40 @@ export default function OperatorLayout({
         </header>
 
         {/* Page Body */}
-        <div className="flex-1 overflow-y-auto p-8 relative">
+        <div className="flex-1 overflow-y-auto p-4 lg:p-8 relative">
           {(!user?.operator?.isValidated && !isOnboarding) && (
-            <div className="absolute inset-0 z-50 bg-white/80 backdrop-blur-md flex flex-col items-center justify-center">
+            <div className="absolute inset-0 z-40 bg-white/80 backdrop-blur-md flex flex-col items-center justify-center p-6">
               <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md text-center border border-gray-100">
                 <div className="w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">
                   <UserIcon className="w-8 h-8" />
                 </div>
-                <h2 className="text-xl font-bold text-foreground mb-2">Compte en attente de validation</h2>
-                <p className="text-subtext mb-6">Votre dossier est actuellement en cours d'examen par la direction de Securits Tech. Vous recevrez un email dès que votre compte sera activé.</p>
-                <Link href="/" className="bg-accent text-primary px-6 py-3 rounded-2xl font-bold hover:bg-primary hover:text-white transition-all">Retour à l'accueil</Link>
+                <h2 className="text-xl font-bold text-foreground mb-2">Compte en attente</h2>
+                <p className="text-subtext mb-6">Dossier en cours d'examen. Vous serez notifié par email.</p>
+                <Link href="/" className="bg-accent text-primary px-6 py-3 rounded-2xl font-bold block">Retour à l'accueil</Link>
               </div>
             </div>
           )}
           
           {(user?.operator?.isValidated && user?.operator?.subscriptionEnd && new Date(user.operator.subscriptionEnd) < new Date()) && (
-            <div className="absolute inset-0 z-50 bg-white/80 backdrop-blur-md flex flex-col items-center justify-center">
+            <div className="absolute inset-0 z-40 bg-white/80 backdrop-blur-md flex flex-col items-center justify-center p-6">
               <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md text-center border border-gray-100">
                 <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Store className="w-8 h-8" />
                 </div>
                 <h2 className="text-xl font-bold text-foreground mb-2">Abonnement Expiré</h2>
-                <p className="text-subtext mb-6">Votre période d'essai ou d'abonnement est arrivée à terme. Pour continuer à publier et recevoir des réservations, veuillez renouveler votre abonnement.</p>
+                <p className="text-subtext mb-6">Veuillez renouveler votre abonnement pour continuer.</p>
                 <div className="space-y-3">
-                  <button className="w-full bg-primary text-white px-6 py-3 rounded-2xl font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/30">
+                  <button className="w-full bg-primary text-white px-6 py-3 rounded-2xl font-bold shadow-lg shadow-primary/30">
                     Payer via Mobile Money
                   </button>
-                  <p className="text-xs text-subtext">Ou rendez-vous à la direction pour un paiement en espèces.</p>
                 </div>
               </div>
             </div>
           )}
 
-          {children}
+          <div className="max-w-7xl mx-auto">
+            {children}
+          </div>
         </div>
       </main>
     </div>

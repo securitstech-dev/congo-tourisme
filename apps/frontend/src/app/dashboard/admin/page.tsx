@@ -303,82 +303,153 @@ export default function AdminDashboard() {
             <h2 className="text-xl font-bold text-foreground">Tous les Opérateurs</h2>
             <p className="text-subtext text-sm mt-1">{allOperators.length} opérateur(s) enregistré(s)</p>
           </div>
-          <div className="overflow-x-auto">
+          <div>
             {isLoading ? (
               <div className="p-20 text-center"><Loader2 className="w-10 h-10 animate-spin text-primary mx-auto" /></div>
             ) : (
-              <table className="w-full text-left min-w-[800px]">
-                <thead>
-                  <tr className="bg-accent/5 text-subtext text-[10px] uppercase tracking-widest font-black">
-                    <th className="px-8 py-4">Entreprise</th>
-                    <th className="px-8 py-4">Type</th>
-                    <th className="px-8 py-4">Ville</th>
-                    <th className="px-8 py-4">Plan</th>
-                    <th className="px-8 py-4">Annonces</th>
-                    <th className="px-8 py-4">Statut</th>
-                    <th className="px-8 py-4 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-50">
-                  {allOperators.map((op) => (
-                    <tr key={op.id} className="hover:bg-accent/5 transition-colors">
-                      <td className="px-8 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary font-bold text-sm shrink-0">
-                            {op.businessName.charAt(0)}
-                          </div>
-                          <div>
-                            <p className="font-bold text-foreground text-sm">{op.businessName}</p>
-                            <p className="text-[10px] text-subtext">{op.user?.email}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-8 py-4 text-sm text-subtext">{op.businessType}</td>
-                      <td className="px-8 py-4 text-sm text-subtext">{op.city}</td>
-                      <td className="px-8 py-4">
-                        <span className="px-2 py-1 bg-secondary/10 text-secondary text-[10px] font-black uppercase rounded-lg">
-                          {op.subscriptionPlan}
-                        </span>
-                      </td>
-                      <td className="px-8 py-4 text-sm font-bold text-foreground">{op.listings?.length || 0}</td>
-                      <td className="px-8 py-4">
-                        {op.isValidated ? (
-                          <span className="flex items-center gap-1 text-green-600 text-xs font-bold">
-                            <BadgeCheck className="w-4 h-4" /> Validé
-                          </span>
-                        ) : (
-                          <span className="flex items-center gap-1 text-orange-500 text-xs font-bold">
-                            <AlertCircle className="w-4 h-4" /> En attente
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-8 py-4 text-right">
-                        <div className="flex justify-end gap-3">
-                          {!op.isValidated && (
-                            <>
-                              {actionLoading === op.id ? (
-                                <Loader2 className="w-4 h-4 animate-spin text-primary" />
-                              ) : (
+              <>
+                {/* Desktop View */}
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full text-left min-w-[800px]">
+                    <thead>
+                      <tr className="bg-accent/5 text-subtext text-[10px] uppercase tracking-widest font-black">
+                        <th className="px-8 py-4">Entreprise</th>
+                        <th className="px-8 py-4">Type</th>
+                        <th className="px-8 py-4">Ville</th>
+                        <th className="px-8 py-4">Plan</th>
+                        <th className="px-8 py-4">Annonces</th>
+                        <th className="px-8 py-4">Statut</th>
+                        <th className="px-8 py-4 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-50">
+                      {allOperators.map((op) => (
+                        <tr key={op.id} className="hover:bg-accent/5 transition-colors">
+                          <td className="px-8 py-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary font-bold text-sm shrink-0">
+                                {op.businessName.charAt(0)}
+                              </div>
+                              <div>
+                                <p className="font-bold text-foreground text-sm">{op.businessName}</p>
+                                <p className="text-[10px] text-subtext">{op.user?.email}</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-8 py-4 text-sm text-subtext">{op.businessType}</td>
+                          <td className="px-8 py-4 text-sm text-subtext">{op.city}</td>
+                          <td className="px-8 py-4">
+                            <span className="px-2 py-1 bg-secondary/10 text-secondary text-[10px] font-black uppercase rounded-lg">
+                              {op.subscriptionPlan}
+                            </span>
+                          </td>
+                          <td className="px-8 py-4 text-sm font-bold text-foreground">{op.listings?.length || 0}</td>
+                          <td className="px-8 py-4">
+                            {op.isValidated ? (
+                              <span className="flex items-center gap-1 text-green-600 text-xs font-bold">
+                                <BadgeCheck className="w-4 h-4" /> Validé
+                              </span>
+                            ) : (
+                              <span className="flex items-center gap-1 text-orange-500 text-xs font-bold">
+                                <AlertCircle className="w-4 h-4" /> En attente
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-8 py-4 text-right">
+                            <div className="flex justify-end gap-3">
+                              {!op.isValidated && (
                                 <>
-                                  <button onClick={() => handleValidate(op.id)} className="text-green-600 font-bold text-xs hover:underline">Valider</button>
-                                  <button onClick={() => handleReject(op.id)} className="text-orange-500 font-bold text-xs hover:underline">Rejeter</button>
+                                  {actionLoading === op.id ? (
+                                    <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                                  ) : (
+                                    <>
+                                      <button onClick={() => handleValidate(op.id)} className="text-green-600 font-bold text-xs hover:underline">Valider</button>
+                                      <button onClick={() => handleReject(op.id)} className="text-orange-500 font-bold text-xs hover:underline">Rejeter</button>
+                                    </>
+                                  )}
                                 </>
                               )}
-                            </>
-                          )}
-                          <button 
-                            onClick={() => handleDeleteOperator(op.id)} 
-                            className="text-red-500 font-bold text-xs hover:underline"
-                            disabled={actionLoading === op.id}
-                          >
-                            Supprimer
-                          </button>
+                              <button 
+                                onClick={() => handleDeleteOperator(op.id)} 
+                                className="text-red-500 font-bold text-xs hover:underline"
+                                disabled={actionLoading === op.id}
+                              >
+                                Supprimer
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile View (Cards) */}
+                <div className="md:hidden divide-y divide-gray-100">
+                  {allOperators.map((op) => (
+                    <div key={op.id} className="p-6 space-y-4">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary font-black text-lg">
+                          {op.businessName.charAt(0)}
                         </div>
-                      </td>
-                    </tr>
+                        <div className="flex-1">
+                          <p className="font-black text-foreground">{op.businessName}</p>
+                          <p className="text-xs text-subtext">{op.user?.email}</p>
+                        </div>
+                        {op.isValidated ? (
+                          <BadgeCheck className="w-6 h-6 text-green-600" />
+                        ) : (
+                          <AlertCircle className="w-6 h-6 text-orange-500" />
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-accent/5 p-3 rounded-2xl">
+                          <p className="text-[10px] font-black text-subtext uppercase tracking-widest mb-1">Type</p>
+                          <p className="text-xs font-bold text-foreground">{op.businessType}</p>
+                        </div>
+                        <div className="bg-accent/5 p-3 rounded-2xl">
+                          <p className="text-[10px] font-black text-subtext uppercase tracking-widest mb-1">Ville</p>
+                          <p className="text-xs font-bold text-foreground">{op.city}</p>
+                        </div>
+                        <div className="bg-accent/5 p-3 rounded-2xl">
+                          <p className="text-[10px] font-black text-subtext uppercase tracking-widest mb-1">Plan</p>
+                          <p className="text-xs font-bold text-secondary uppercase">{op.subscriptionPlan}</p>
+                        </div>
+                        <div className="bg-accent/5 p-3 rounded-2xl">
+                          <p className="text-[10px] font-black text-subtext uppercase tracking-widest mb-1">Annonces</p>
+                          <p className="text-xs font-bold text-foreground">{op.listings?.length || 0}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3 pt-2">
+                        {!op.isValidated && (
+                          <>
+                            <button 
+                              onClick={() => handleValidate(op.id)}
+                              className="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold text-xs shadow-lg shadow-green-600/20"
+                            >
+                              Valider
+                            </button>
+                            <button 
+                              onClick={() => handleReject(op.id)}
+                              className="flex-1 bg-orange-500 text-white py-3 rounded-xl font-bold text-xs shadow-lg shadow-orange-500/20"
+                            >
+                              Rejeter
+                            </button>
+                          </>
+                        )}
+                        <button 
+                          onClick={() => handleDeleteOperator(op.id)}
+                          className="flex-1 bg-red-50 text-red-600 py-3 rounded-xl font-bold text-xs"
+                        >
+                          Supprimer
+                        </button>
+                      </div>
+                    </div>
                   ))}
-                </tbody>
-              </table>
+                </div>
+              </>
             )}
           </div>
         </div>
@@ -402,8 +473,10 @@ export default function AdminDashboard() {
               <p className="text-subtext font-medium">Aucune transaction enregistrée pour le moment.</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left min-w-[800px]">
+            <>
+              {/* Desktop View */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left min-w-[800px]">
                 <thead>
                   <tr className="bg-accent/5 text-subtext text-[10px] uppercase tracking-widest font-black">
                     <th className="px-8 py-4">Client</th>
@@ -445,8 +518,44 @@ export default function AdminDashboard() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
-            </div>
+                </table>
+              </div>
+
+              {/* Mobile View (Cards) */}
+              <div className="md:hidden divide-y divide-gray-100">
+                {stats.recentPayments.map((payment: any) => (
+                  <div key={payment.id} className="p-6 space-y-3">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="font-black text-foreground">
+                          {payment.reservation?.tourist?.firstName} {payment.reservation?.tourist?.lastName}
+                        </p>
+                        <p className="text-xs text-subtext">{payment.reservation?.tourist?.email}</p>
+                      </div>
+                      <p className="font-black text-primary text-lg">
+                        {payment.amount?.toLocaleString()} FCFA
+                      </p>
+                    </div>
+                    <div className="bg-accent/5 p-3 rounded-2xl">
+                      <p className="text-[10px] font-black text-subtext uppercase tracking-widest mb-1">Offre</p>
+                      <p className="text-xs font-bold text-foreground truncate">
+                        {payment.reservation?.listing?.title || '—'}
+                      </p>
+                    </div>
+                    <div className="flex justify-between items-center text-xs">
+                      <p className="text-subtext font-bold">
+                        {payment.paidAt
+                          ? format(new Date(payment.paidAt), 'dd MMM yyyy', { locale: fr })
+                          : '—'}
+                      </p>
+                      <span className="px-2 py-1 bg-accent/50 text-subtext text-[9px] font-black rounded-lg uppercase">
+                        {payment.method?.replace('MOBILE_MONEY_', '') || '—'}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
       )}

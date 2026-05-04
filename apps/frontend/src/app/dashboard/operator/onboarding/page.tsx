@@ -182,13 +182,13 @@ export default function OperatorOnboarding() {
 
   return (
     <div className="max-w-4xl mx-auto py-12 px-6">
-      <div className="flex items-center gap-6 mb-16">
-        <div className="p-5 bg-secondary text-white rounded-3xl shadow-xl shadow-secondary/20">
-          <ShieldCheck className="w-10 h-10" />
+      <div className="flex flex-col md:flex-row items-center gap-6 mb-12 text-center md:text-left">
+        <div className="p-4 md:p-5 bg-secondary text-white rounded-3xl shadow-xl shadow-secondary/20">
+          <ShieldCheck className="w-8 h-8 md:w-10 md:h-10" />
         </div>
         <div>
-          <h1 className="text-4xl font-black text-foreground tracking-tight">Onboarding Opérateur</h1>
-          <p className="text-subtext font-medium">Finalisez votre inscription légale pour commencer à vendre.</p>
+          <h1 className="text-2xl md:text-4xl font-black text-foreground tracking-tight">Onboarding Opérateur</h1>
+          <p className="text-sm md:text-base text-subtext font-medium">Finalisez votre inscription légale pour commencer à vendre.</p>
         </div>
       </div>
 
@@ -211,8 +211,8 @@ export default function OperatorOnboarding() {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
         {step === 1 && (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="bg-white rounded-[40px] p-10 border border-gray-100 shadow-sm space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+              <div className="bg-white rounded-[32px] md:rounded-[40px] p-6 md:p-10 border border-gray-100 shadow-sm space-y-6 md:space-y-8">
                 <h2 className="text-xl font-black flex items-center gap-3 text-foreground">
                   <Building2 className="w-6 h-6 text-primary" />
                   Identité de l'établissement
@@ -290,7 +290,7 @@ export default function OperatorOnboarding() {
                 </div>
               </div>
 
-              <div className="bg-white rounded-[40px] p-10 border border-gray-100 shadow-sm space-y-8">
+              <div className="bg-white rounded-[32px] md:rounded-[40px] p-6 md:p-10 border border-gray-100 shadow-sm space-y-6 md:space-y-8">
                 <h2 className="text-xl font-black flex items-center gap-3 text-foreground">
                   <MapPin className="w-6 h-6 text-primary" />
                   Localisation & Contact
@@ -335,9 +335,9 @@ export default function OperatorOnboarding() {
               </div>
             </div>
 
-            <div className="bg-foreground text-white rounded-[40px] p-10 shadow-2xl relative overflow-hidden">
+            <div className="bg-foreground text-white rounded-[32px] md:rounded-[40px] p-8 md:p-10 shadow-2xl relative overflow-hidden">
                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                  <div>
+                  <div className="text-center md:text-left">
                     <h3 className="text-2xl font-black mb-2">Presque terminé...</h3>
                     <p className="text-white/60 font-medium">L'étape suivante est cruciale : vos pièces justificatives.</p>
                   </div>
@@ -422,7 +422,7 @@ export default function OperatorOnboarding() {
           <div className="space-y-12">
             <h2 className="text-3xl font-black text-center text-foreground">Choisissez votre formule</h2>
             
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
               {[
                 { key: 'STARTER', label: 'Starter', price: '15.000', color: 'bg-blue-500', desc: 'Idéal pour débuter' },
                 { key: 'BUSINESS', label: 'Business', price: '25.000', color: 'bg-primary', desc: 'Le plus populaire', popular: true },
@@ -431,7 +431,7 @@ export default function OperatorOnboarding() {
                 <div 
                   key={p.key}
                   onClick={() => setSelectedPlan(p.key)}
-                  className={`relative p-8 rounded-[40px] cursor-pointer transition-all border-4 ${
+                  className={`relative p-6 md:p-8 rounded-[32px] md:rounded-[40px] cursor-pointer transition-all border-4 ${
                     selectedPlan === p.key ? `border-${p.key === 'BUSINESS' ? 'primary' : 'secondary'} bg-white shadow-2xl scale-105` : 'border-transparent bg-white/50 grayscale opacity-60'
                   }`}
                 >

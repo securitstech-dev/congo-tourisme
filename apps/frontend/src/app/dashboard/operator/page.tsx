@@ -114,45 +114,87 @@ export default function OperatorDashboard() {
               Voir tout le carnet <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left min-w-[800px]">
-              <thead>
-                <tr className="bg-accent/5">
-                  <th className="px-8 py-4 text-[10px] font-black text-subtext uppercase tracking-widest">Client</th>
-                  <th className="px-8 py-4 text-[10px] font-black text-subtext uppercase tracking-widest">Offre</th>
-                  <th className="px-8 py-4 text-[10px] font-black text-subtext uppercase tracking-widest">Montant</th>
-                  <th className="px-8 py-4 text-[10px] font-black text-subtext uppercase tracking-widest">Paiement</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {bookings.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} className="px-8 py-20 text-center">
-                      <Calendar className="w-12 h-12 text-subtext/20 mx-auto mb-4" />
-                      <p className="text-subtext font-bold">Aucune réservation pour le moment.</p>
-                    </td>
+          <div className="">
+            {/* Desktop View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left min-w-[800px]">
+                <thead>
+                  <tr className="bg-accent/5">
+                    <th className="px-8 py-4 text-[10px] font-black text-subtext uppercase tracking-widest">Client</th>
+                    <th className="px-8 py-4 text-[10px] font-black text-subtext uppercase tracking-widest">Offre</th>
+                    <th className="px-8 py-4 text-[10px] font-black text-subtext uppercase tracking-widest">Montant</th>
+                    <th className="px-8 py-4 text-[10px] font-black text-subtext uppercase tracking-widest">Paiement</th>
                   </tr>
-                ) : (
-                  bookings.slice(0, 5).map((booking) => (
-                    <tr key={booking.id} className="hover:bg-accent/5 transition-colors">
-                      <td className="px-8 py-5">
-                        <p className="font-bold text-foreground text-sm">{booking.tourist?.firstName} {booking.tourist?.lastName}</p>
-                        <p className="text-[10px] text-subtext font-medium">{format(new Date(booking.createdAt), 'dd MMMM yyyy', { locale: fr })}</p>
-                      </td>
-                      <td className="px-8 py-5 text-sm text-foreground font-bold">{booking.listing?.title}</td>
-                      <td className="px-8 py-5 text-sm font-black text-primary">{booking.totalPrice.toLocaleString()} FCFA</td>
-                      <td className="px-8 py-5">
-                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                          booking.paymentStatus === 'PAID' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-600'
-                        }`}>
-                          {booking.paymentStatus === 'PAID' ? '✓ Payé' : '⏳ Attente'}
-                        </span>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {bookings.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="px-8 py-20 text-center">
+                        <Calendar className="w-12 h-12 text-subtext/20 mx-auto mb-4" />
+                        <p className="text-subtext font-bold">Aucune réservation pour le moment.</p>
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : (
+                    bookings.slice(0, 5).map((booking) => (
+                      <tr key={booking.id} className="hover:bg-accent/5 transition-colors">
+                        <td className="px-8 py-5">
+                          <p className="font-bold text-foreground text-sm">{booking.tourist?.firstName} {booking.tourist?.lastName}</p>
+                          <p className="text-[10px] text-subtext font-medium">{format(new Date(booking.createdAt), 'dd MMMM yyyy', { locale: fr })}</p>
+                        </td>
+                        <td className="px-8 py-5 text-sm text-foreground font-bold">{booking.listing?.title}</td>
+                        <td className="px-8 py-5 text-sm font-black text-primary">{booking.totalPrice.toLocaleString()} FCFA</td>
+                        <td className="px-8 py-5">
+                          <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                            booking.paymentStatus === 'PAID' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-600'
+                          }`}>
+                            {booking.paymentStatus === 'PAID' ? '✓ Payé' : '⏳ Attente'}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile View (Cards) */}
+            <div className="md:hidden divide-y divide-gray-100">
+              {bookings.length === 0 ? (
+                <div className="p-12 text-center">
+                  <Calendar className="w-10 h-10 text-subtext/20 mx-auto mb-3" />
+                  <p className="text-subtext font-bold text-sm">Aucune réservation.</p>
+                </div>
+              ) : (
+                bookings.slice(0, 5).map((booking) => (
+                  <div key={booking.id} className="p-6 space-y-3">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="font-black text-foreground">
+                          {booking.tourist?.firstName} {booking.tourist?.lastName}
+                        </p>
+                        <p className="text-[10px] text-subtext">
+                          {format(new Date(booking.createdAt), 'dd MMM yyyy', { locale: fr })}
+                        </p>
+                      </div>
+                      <span className={`px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${
+                        booking.paymentStatus === 'PAID' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-600'
+                      }`}>
+                        {booking.paymentStatus === 'PAID' ? 'Payé' : 'Attente'}
+                      </span>
+                    </div>
+                    <div className="bg-accent/5 p-3 rounded-2xl">
+                      <p className="text-[10px] font-black text-subtext uppercase tracking-widest mb-1">Offre</p>
+                      <p className="text-xs font-bold text-foreground truncate">{booking.listing?.title}</p>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <p className="text-sm font-black text-primary">
+                        {booking.totalPrice.toLocaleString()} FCFA
+                      </p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
 
