@@ -299,4 +299,33 @@ export class AdminService {
 
     return { user, operator };
   }
+
+  async deleteOperator(id: string) {
+    const operator = await this.prisma.operator.findUnique({
+      where: { id },
+      include: { user: true }
+    });
+
+    if (!operator) throw new NotFoundException('Opérateur introuvable');
+
+    // Supprimer les dépendances (listings, images, avis, reservations, etc.)
+    // Note: Dans une version de production, on utiliserait le ON DELETE CASCADE dans le schéma
+    // Ici on fait un nettoyage propre
+    
+    const listings = await this.prisma.listing.findMany({ where: { operatorId: id } });
+    const listingIds = listings.map(l => l.id);
+
+    await this.prisma.review.deleteMany({ where: { listingId: { in: listingIds } } });
+    await this.prisma.reservation.deleteMany({ where: { listingId: { in: listingIds } } });
+    await this.prisma.listingImage.deleteMany({ where: { listingId: { in: listingIds } } });
+    await this.prisma.listing.deleteMany({ where: { operatorId: id } });
+    await this.prisma.operatorDocument.deleteMany({ where: { operatorId: id } });
+    await this.prisma.refreshToken.deleteMany({ where: { userId: operator.userId } });
+
+    // Enfin supprimer l'opérateur et l'utilisateur
+    await this.prisma.operator.delete({ where: { id } });
+    await this.prisma.user.delete({ where: { id: operator.userId } });
+
+    return { message: 'Compte opérateur et utilisateur supprimés avec succès.' };
+  }
 }

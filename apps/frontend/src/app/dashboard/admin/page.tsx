@@ -60,7 +60,6 @@ export default function AdminDashboard() {
       setActionLoading(null);
     }
   };
-
   const handleReject = async (id: string) => {
     if (!confirm('Rejeter cet opérateur ? Son compte sera désactivé.')) return;
     setActionLoading(id);
@@ -70,6 +69,21 @@ export default function AdminDashboard() {
       setAllOperators(prev => prev.filter(op => op.id !== id));
     } catch {
       alert('Erreur lors du rejet.');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleDeleteOperator = async (id: string) => {
+    if (!confirm('ATTENTION : Voulez-vous vraiment supprimer cet opérateur ? Toutes ses annonces, réservations et données seront définitivement effacées.')) return;
+    setActionLoading(id);
+    try {
+      await api.delete(`/admin/operators/${id}`);
+      setAllOperators(prev => prev.filter(op => op.id !== id));
+      setPendingOperators(prev => prev.filter(op => op.id !== id));
+      alert('Opérateur supprimé avec succès.');
+    } catch {
+      alert('Erreur lors de la suppression.');
     } finally {
       setActionLoading(null);
     }
@@ -339,18 +353,27 @@ export default function AdminDashboard() {
                         )}
                       </td>
                       <td className="px-8 py-4 text-right">
-                        {!op.isValidated && (
-                          <div className="flex justify-end gap-2">
-                            {actionLoading === op.id ? (
-                              <Loader2 className="w-4 h-4 animate-spin text-primary" />
-                            ) : (
-                              <>
-                                <button onClick={() => handleValidate(op.id)} className="text-green-600 font-bold text-xs hover:underline">Valider</button>
-                                <button onClick={() => handleReject(op.id)} className="text-red-500 font-bold text-xs hover:underline">Rejeter</button>
-                              </>
-                            )}
-                          </div>
-                        )}
+                        <div className="flex justify-end gap-3">
+                          {!op.isValidated && (
+                            <>
+                              {actionLoading === op.id ? (
+                                <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                              ) : (
+                                <>
+                                  <button onClick={() => handleValidate(op.id)} className="text-green-600 font-bold text-xs hover:underline">Valider</button>
+                                  <button onClick={() => handleReject(op.id)} className="text-orange-500 font-bold text-xs hover:underline">Rejeter</button>
+                                </>
+                              )}
+                            </>
+                          )}
+                          <button 
+                            onClick={() => handleDeleteOperator(op.id)} 
+                            className="text-red-500 font-bold text-xs hover:underline"
+                            disabled={actionLoading === op.id}
+                          >
+                            Supprimer
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}

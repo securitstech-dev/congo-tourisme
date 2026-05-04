@@ -52,4 +52,9 @@ export class AdminController {
   createManualRegistration(@Body() body: any) {
     return this.adminService.createManualRegistration(body);
   }
+
+  @Delete('operators/:id')
+  deleteOperator(@Param('id') id: string) {
+    return this.adminService.deleteOperator(id);
+  }
 }

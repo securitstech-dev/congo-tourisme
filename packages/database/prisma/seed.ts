@@ -6,7 +6,8 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Début du nettoyage et du seed professionnel...');
 
-  // 0. Nettoyage complet
+  // 0. Nettoyage (Désactivé pour éviter la perte de données en phase commerciale)
+  /*
   await prisma.review.deleteMany();
   await prisma.payment.deleteMany();
   await prisma.reservation.deleteMany();
@@ -15,6 +16,7 @@ async function main() {
   await prisma.operatorDocument.deleteMany();
   await prisma.operator.deleteMany();
   await prisma.user.deleteMany();
+  */
 
   const passwordHash = await bcrypt.hash('Congo2026!', 10);
 
