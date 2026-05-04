@@ -94,7 +94,7 @@ function RegisterForm() {
           }`}
         >
           <Plane className="w-4 h-4" />
-          Je suis un Voyageur
+          Je suis un Usager
         </button>
         <button
           onClick={() => handleRoleChange('OPERATOR')}
@@ -183,7 +183,7 @@ function RegisterForm() {
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
               <>
-                Créer mon compte {selectedRole === 'OPERATOR' ? 'Opérateur' : 'Voyageur'} <ArrowRight className="w-5 h-5" />
+                Créer mon compte {selectedRole === 'OPERATOR' ? 'Opérateur' : 'Usager'} <ArrowRight className="w-5 h-5" />
               </>
             )}
           </button>

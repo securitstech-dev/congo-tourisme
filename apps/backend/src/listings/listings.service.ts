@@ -96,7 +96,9 @@ export class ListingsService {
         images: true,
         operator: true,
         reviews: {
+          where: { isVisible: true },
           include: { author: true },
+          orderBy: { createdAt: 'desc' },
         },
       },
     });

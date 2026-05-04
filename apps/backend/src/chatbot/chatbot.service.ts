@@ -104,11 +104,13 @@ export class ChatbotService {
 
   // Modération automatique des avis
   async moderateReview(comment: string) {
+    const fallback = { status: 'APPROVED', reason: 'Approbation automatique (système).' };
+    
     try {
       const apiKey = this.configService.get<string>('GROQ_API_KEY') || this.configService.get<string>('ANTHROPIC_API_KEY');
       
       if (!apiKey || apiKey.length < 10 || apiKey.includes('placeholder')) {
-        return { status: 'APPROVED', reason: 'Conforme.' };
+        return fallback;
       }
 
       const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -120,18 +122,26 @@ export class ChatbotService {
         body: JSON.stringify({
           model: 'llama-3.3-70b-versatile',
           messages: [
-            { role: 'system', content: 'Modère ce commentaire. RÉPONDS UNIQUEMENT EN JSON : {"status": "APPROVED" | "REJECTED", "reason": "explication courte"}' },
+            { role: 'system', content: 'Tu es un modérateur. Analyse si ce commentaire est respectueux et constructif. RÉPONDS UNIQUEMENT EN JSON : {"status": "APPROVED" | "REJECTED", "reason": "explication"}' },
             { role: 'user', content: comment }
           ],
           response_format: { type: 'json_object' }
         }),
+        signal: AbortSignal.timeout(5000), // Timeout de 5 secondes
       });
 
+      if (!response.ok) return fallback;
+
       const data = await response.json();
-      return JSON.parse(data.choices?.[0]?.message?.content || '{}');
+      const content = data.choices?.[0]?.message?.content;
+      
+      if (!content) return fallback;
+      
+      return JSON.parse(content);
       
     } catch (error) {
-      return { status: 'APPROVED', reason: 'Approbation automatique (erreur technique).' };
+      console.error('Moderation Error:', error);
+      return fallback;
     }
   }
 }

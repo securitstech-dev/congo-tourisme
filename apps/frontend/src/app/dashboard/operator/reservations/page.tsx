@@ -241,7 +241,7 @@ export default function OperatorReservationsPage() {
                             ? ` — ${format(new Date(b.checkOut), 'dd MMM yyyy', { locale: fr })}`
                             : ' (date de fin non définie)'}
                         </p>
-                        <p className="text-[10px] text-subtext">{b.guests} voyageur{b.guests > 1 ? 's' : ''}</p>
+                        <p className="text-[10px] text-subtext">{b.guests} usager{b.guests > 1 ? 's' : ''}</p>
                       </td>
                       <td className="px-6 py-4">
                         <p className="font-black text-primary text-sm">{b.totalPrice?.toLocaleString()} FCFA</p>

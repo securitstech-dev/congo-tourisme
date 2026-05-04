@@ -121,7 +121,7 @@ export default function NewListingPage() {
 
       <div>
         <h1 className="text-3xl font-bold text-foreground mb-2">Ajouter une nouvelle annonce</h1>
-        <p className="text-subtext">Créez une offre attractive pour attirer plus de voyageurs.</p>
+        <p className="text-subtext">Créez une offre attractive pour attirer plus d'usagers.</p>
       </div>
 
       <div className="bg-white p-4 rounded-3xl border border-gray-100 shadow-sm flex items-center justify-between px-8">

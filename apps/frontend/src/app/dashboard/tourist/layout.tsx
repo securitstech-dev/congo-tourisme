@@ -50,7 +50,7 @@ export default function TouristLayout({
         <div className="flex items-center gap-4">
           <div className="text-right hidden md:block">
             <p className="text-sm font-bold text-foreground">{user?.firstName} {user?.lastName}</p>
-            <p className="text-xs text-subtext">Voyageur</p>
+            <p className="text-xs text-subtext">Usager</p>
           </div>
           <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-bold">
             {user?.firstName?.charAt(0)}

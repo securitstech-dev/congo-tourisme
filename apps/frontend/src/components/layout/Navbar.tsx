@@ -58,13 +58,20 @@ export default function Navbar() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
+        {/* Logo Horizontal */}
+        <Link href="/" className="flex items-center gap-3 group">
           <img 
             src="/logo.png" 
-            alt="Tourisme Congo" 
-            className="h-12 w-auto object-contain"
+            alt="Logo" 
+            className="h-10 w-auto object-contain transition-transform group-hover:scale-105"
           />
+          <div className="flex flex-col justify-center">
+            <div className="flex items-center gap-1.5">
+              <span className="text-xl font-black tracking-tighter leading-none text-foreground">CONGO</span>
+              <span className="text-xl font-black tracking-tighter leading-none text-primary">TOURISME</span>
+            </div>
+            <span className="text-[9px] font-black text-subtext tracking-widest leading-none mt-1 uppercase">Tourisme et les loisirs</span>
+          </div>
         </Link>
 
         {/* Desktop Navigation */}

@@ -44,6 +44,9 @@ export default function ListingDetailsPage() {
     adults: 1,
     children: 0
   });
+  const [reviewComment, setReviewComment] = useState('');
+  const [reviewRating, setReviewRating] = useState(5);
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -101,6 +104,41 @@ export default function ListingDetailsPage() {
       alert('Une erreur est survenue lors de la rservation.');
     } finally {
       setIsBooking(false);
+    }
+  };
+
+  const handleSubmitReview = async () => {
+    if (!isAuthenticated) {
+      router.push(`/auth/login?redirect=/explore/${id}`);
+      return;
+    }
+
+    if (!reviewComment.trim()) {
+      alert('Veuillez écrire un commentaire.');
+      return;
+    }
+
+    setIsSubmittingReview(true);
+    try {
+      await api.post('/reviews', {
+        listingId: id,
+        rating: reviewRating,
+        comment: reviewComment
+      });
+      
+      setReviewComment('');
+      setReviewRating(5);
+      
+      // Rafraîchir l'annonce pour voir le nouvel avis (en attente de modération possiblement)
+      const response = await api.get(`/listings/${id}`);
+      setListing(response.data);
+      
+      alert('Votre avis a été envoyé et est en cours de modération par Kongo.');
+    } catch (error) {
+      console.error('Erreur lors de l\'envoi de l\'avis:', error);
+      alert('Une erreur est survenue lors de l\'envoi de l\'avis.');
+    } finally {
+      setIsSubmittingReview(false);
     }
   };
 
@@ -250,12 +288,16 @@ export default function ListingDetailsPage() {
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-black text-foreground flex items-center gap-2">
                 <MessageSquare className="w-6 h-6 text-primary" />
-                Avis des voyageurs
+                Avis des usagers
               </h2>
               <div className="flex items-center gap-2 text-yellow-500 font-bold">
                 <Star className="w-5 h-5 fill-current" />
-                <span className="text-xl">4.9</span>
-                <span className="text-subtext font-medium text-sm">(12 avis)</span>
+                <span className="text-xl">
+                  {listing.reviews?.length > 0 
+                    ? (listing.reviews.reduce((acc: number, r: any) => acc + r.rating, 0) / listing.reviews.length).toFixed(1)
+                    : '5.0'}
+                </span>
+                <span className="text-subtext font-medium text-sm">({listing.reviews?.length || 0} avis)</span>
               </div>
             </div>
 
@@ -276,8 +318,12 @@ export default function ListingDetailsPage() {
                 <div className="space-y-4">
                   <div className="flex gap-2">
                     {[1, 2, 3, 4, 5].map((s) => (
-                      <button key={s} className="hover:scale-110 transition-transform">
-                        <Star className={`w-8 h-8 ${s <= 5 ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200'}`} />
+                      <button 
+                        key={s} 
+                        onClick={() => setReviewRating(s)}
+                        className="hover:scale-110 transition-transform"
+                      >
+                        <Star className={`w-8 h-8 ${s <= reviewRating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200'}`} />
                       </button>
                     ))}
                   </div>
@@ -285,9 +331,15 @@ export default function ListingDetailsPage() {
                     placeholder="Comment avez-vous trouvé votre séjour ? Partagez votre expérience..."
                     className="w-full bg-white border border-gray-100 rounded-3xl p-6 text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none resize-none"
                     rows={4}
+                    value={reviewComment}
+                    onChange={(e) => setReviewComment(e.target.value)}
                   ></textarea>
-                  <button className="bg-primary text-white px-8 py-4 rounded-2xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all">
-                    Publier mon avis
+                  <button 
+                    onClick={handleSubmitReview}
+                    disabled={isSubmittingReview}
+                    className="bg-primary text-white px-8 py-4 rounded-2xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all disabled:opacity-50"
+                  >
+                    {isSubmittingReview ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Publier mon avis'}
                   </button>
                 </div>
               </div>
@@ -300,33 +352,41 @@ export default function ListingDetailsPage() {
 
             {/* Liste des avis */}
             <div className="space-y-6 pt-4">
-              {[1, 2].map((i) => (
-                <div key={i} className="p-8 bg-white border border-gray-50 rounded-[40px] shadow-sm space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-accent rounded-full flex items-center justify-center text-primary font-black">J</div>
-                      <div>
-                        <h4 className="font-bold text-foreground">Jean-Paul M.</h4>
-                        <p className="text-[10px] text-subtext font-black uppercase tracking-widest">Voyageur vérifié</p>
+              {listing.reviews?.length > 0 ? (
+                listing.reviews.filter((r: any) => r.isVisible).map((review: any) => (
+                  <div key={review.id} className="p-8 bg-white border border-gray-50 rounded-[40px] shadow-sm space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-accent rounded-full flex items-center justify-center text-primary font-black">
+                          {review.author?.firstName?.charAt(0) || 'U'}
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-foreground">
+                            {review.author?.firstName} {review.author?.lastName?.charAt(0)}.
+                          </h4>
+                          <p className="text-[10px] text-subtext font-black uppercase tracking-widest">Usager vérifié</p>
+                        </div>
+                      </div>
+                      <div className="flex text-yellow-400">
+                        {[1, 2, 3, 4, 5].map((s) => (
+                          <Star key={s} className={`w-4 h-4 ${s <= review.rating ? 'fill-current' : 'text-gray-200'}`} />
+                        ))}
                       </div>
                     </div>
-                    <div className="flex text-yellow-400">
-                      <Star className="w-4 h-4 fill-current" />
-                      <Star className="w-4 h-4 fill-current" />
-                      <Star className="w-4 h-4 fill-current" />
-                      <Star className="w-4 h-4 fill-current" />
-                      <Star className="w-4 h-4 fill-current" />
+                    <p className="text-subtext font-medium leading-relaxed italic">
+                      "{review.comment}"
+                    </p>
+                    <div className="flex items-center gap-2 text-[10px] font-black text-gray-300 uppercase tracking-widest">
+                      <CheckCircle2 className="w-4 h-4 text-green-500" />
+                      Approuvé par Kongo
                     </div>
                   </div>
-                  <p className="text-subtext font-medium leading-relaxed italic">
-                    "Un séjour mémorable. L'accueil était chaleureux et les services à la hauteur de nos attentes. Je recommande vivement pour une expérience authentique au Congo."
-                  </p>
-                  <div className="flex items-center gap-2 text-[10px] font-black text-gray-300 uppercase tracking-widest">
-                    <CheckCircle2 className="w-4 h-4 text-green-500" />
-                    Approuvé par Kongo
-                  </div>
+                ))
+              ) : (
+                <div className="text-center py-10">
+                  <p className="text-subtext italic">Aucun avis pour le moment. Soyez le premier à partager votre expérience !</p>
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </div>

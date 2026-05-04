@@ -30,7 +30,7 @@ export default function TouristProfilePage() {
             <h3 className="text-xl font-bold">{user?.firstName} {user?.lastName}</h3>
             <p className="text-subtext text-sm mb-6">{user?.email}</p>
             <span className="bg-primary/10 text-primary px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest">
-              Touriste Voyageur
+              Touriste Usager
             </span>
           </div>
         </div>

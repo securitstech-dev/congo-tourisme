@@ -8,11 +8,20 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           {/* Brand Identity */}
           <div className="space-y-6">
-            <img 
-              src="/logo.png" 
-              alt="Tourisme Congo" 
-              className="h-10 w-auto object-contain brightness-0 invert" 
-            />
+            <Link href="/" className="flex items-center gap-3 brightness-0 invert">
+              <img 
+                src="/logo.png" 
+                alt="Logo" 
+                className="h-10 w-auto object-contain" 
+              />
+              <div className="flex flex-col">
+                <div className="flex items-center gap-1">
+                  <span className="text-xl font-black tracking-tighter leading-none">CONGO</span>
+                  <span className="text-xl font-black tracking-tighter leading-none">TOURISME</span>
+                </div>
+                <span className="text-[8px] font-bold tracking-widest leading-none mt-1 uppercase">Tourisme et les loisirs</span>
+              </div>
+            </Link>
             <p className="text-gray-400 leading-relaxed">
               La plateforme de référence pour découvrir la beauté sauvage et la richesse culturelle de la République du Congo. Une initiative de Securits Tech.
             </p>
@@ -72,11 +81,11 @@ export default function Footer() {
             <div className="mt-8 space-y-3">
               <div className="flex items-center gap-3 text-sm text-gray-400">
                 <Phone className="w-4 h-4 text-secondary" />
-                <span>+242 06 123 45 67</span>
+                <span>+242 05 302 8383 / 06 881 71 04</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-gray-400">
                 <Mail className="w-4 h-4 text-secondary" />
-                <span>contact@congotourisme.cg</span>
+                <span>securitstech@gmail.com</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-gray-400">
                 <MapPin className="w-4 h-4 text-secondary" />

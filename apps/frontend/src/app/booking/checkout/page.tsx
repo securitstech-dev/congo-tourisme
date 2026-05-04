@@ -185,9 +185,9 @@ function CheckoutContent() {
               <div className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-2 text-subtext">
                   <Users className="w-4 h-4" />
-                  <span>Voyageurs</span>
+                  <span>Usagers</span>
                 </div>
-                <span className="font-bold">{booking.guests} Voyageur{booking.guests > 1 ? 's' : ''}</span>
+                <span className="font-bold">{booking.guests} Usager{booking.guests > 1 ? 's' : ''}</span>
               </div>
             </div>
 

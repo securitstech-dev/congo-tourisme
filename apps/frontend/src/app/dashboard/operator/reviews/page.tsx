@@ -105,7 +105,7 @@ export default function OperatorReviewsPage() {
                         Approuvé
                       </div>
                       <p className="text-[11px] text-subtext font-medium leading-tight">
-                        Ce commentaire est visible par tous les voyageurs sur votre fiche.
+                        Ce commentaire est visible par tous les usagers sur votre fiche.
                       </p>
                     </div>
                   ) : review.status === 'REJECTED' ? (
