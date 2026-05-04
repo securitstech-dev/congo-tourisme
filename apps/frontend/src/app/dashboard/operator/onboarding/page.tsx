@@ -21,7 +21,8 @@ import api from '@/lib/api';
 const onboardingSchema = z.object({
   businessName: z.string().min(3, "Le nom de l'établissement est requis"),
   businessType: z.enum(['HOTEL', 'RESTAURANT', 'CASINO', 'EVENT_HALL', 'TOURIST_SITE', 'TRAVEL_AGENCY', 'BAR_NIGHTCLUB', 'SPA_WELLNESS', 'LODGE_CAMP', 'OTHER'], {
-    errorMap: () => ({ message: "Le type d'établissement est requis" })
+    required_error: "Le type d'établissement est requis",
+    invalid_type_error: "Le type d'établissement est requis"
   }),
   description: z.string().min(10, "Une courte description (10 caractères min) est requise"),
   rccmNumber: z.string().min(5, "Le numéro RCCM est requis"),

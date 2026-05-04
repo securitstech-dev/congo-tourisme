@@ -14,7 +14,8 @@ import {
   User as UserIcon,
   MessageSquare,
   Landmark,
-  Receipt
+  X,
+  Menu
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -25,7 +26,11 @@ export default function OperatorLayout({
 }) {
   const { user, isAuthenticated, logout } = useAuthStore();
   const router = useRouter();
+  const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  const isOnboarding = pathname === '/dashboard/operator/onboarding';
 
   useEffect(() => {
     setMounted(true);
