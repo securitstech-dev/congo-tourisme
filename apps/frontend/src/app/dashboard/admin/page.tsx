@@ -307,7 +307,7 @@ export default function AdminDashboard() {
             {isLoading ? (
               <div className="p-20 text-center"><Loader2 className="w-10 h-10 animate-spin text-primary mx-auto" /></div>
             ) : (
-              <table className="w-full text-left">
+              <table className="w-full text-left min-w-[800px]">
                 <thead>
                   <tr className="bg-accent/5 text-subtext text-[10px] uppercase tracking-widest font-black">
                     <th className="px-8 py-4">Entreprise</th>
@@ -403,7 +403,7 @@ export default function AdminDashboard() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-left">
+              <table className="w-full text-left min-w-[800px]">
                 <thead>
                   <tr className="bg-accent/5 text-subtext text-[10px] uppercase tracking-widest font-black">
                     <th className="px-8 py-4">Client</th>

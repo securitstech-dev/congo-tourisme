@@ -187,7 +187,7 @@ export default function ListingDetailsPage() {
       </div>
 
       {/* Hero Image Gallery */}
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-4 h-[500px]">
+      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-4 h-[300px] md:h-[500px]">
         <div className="md:col-span-2 relative rounded-3xl overflow-hidden shadow-2xl">
           <img 
             src={listing.images?.[0]?.url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=800'} 
@@ -259,7 +259,7 @@ export default function ListingDetailsPage() {
           {/* Amenities */}
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-foreground">Ce que propose ce lieu</h2>
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {amenities.map((item, i) => (
                 <div key={i} className="flex items-center gap-4 text-subtext">
                   <div className="w-12 h-12 bg-accent/30 rounded-2xl flex items-center justify-center text-primary">

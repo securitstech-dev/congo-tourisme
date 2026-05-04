@@ -115,7 +115,7 @@ export default function OperatorDashboard() {
             </Link>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-left">
+            <table className="w-full text-left min-w-[800px]">
               <thead>
                 <tr className="bg-accent/5">
                   <th className="px-8 py-4 text-[10px] font-black text-subtext uppercase tracking-widest">Client</th>

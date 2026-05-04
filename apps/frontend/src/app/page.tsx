@@ -108,7 +108,7 @@ export default function HomePage() {
             
             <motion.h1 
               variants={fadeInUp}
-              className="text-6xl md:text-8xl font-black leading-[1.1] tracking-tighter"
+              className="text-4xl sm:text-6xl md:text-8xl font-black leading-[1.1] tracking-tighter"
             >
               Explorez le <span className="text-primary underline decoration-secondary decoration-4">Cœur de l'Afrique</span>
             </motion.h1>

@@ -130,7 +130,7 @@ function ExploreContent() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-4 gap-10">
+      <div className="max-w-7xl mx-auto px-6 py-6 lg:py-10 grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-10">
         {/* Sidebar Filters (Desktop) */}
         {showFilters && (
           <aside className="lg:block space-y-8 col-span-1">
@@ -207,7 +207,7 @@ function ExploreContent() {
               <p className="text-subtext">Essayez d'ajuster vos filtres ou explorez d'autres catégories.</p>
             </div>
           ) : (
-            <div className={`grid grid-cols-1 md:grid-cols-2 ${showFilters ? 'xl:grid-cols-2' : 'xl:grid-cols-3'} gap-8`}>
+            <div className={`grid grid-cols-1 sm:grid-cols-2 ${showFilters ? 'xl:grid-cols-2' : 'xl:grid-cols-3'} gap-6 lg:gap-8`}>
               {listings.map((item) => (
                 <div key={item.id} className="bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden group hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 flex flex-col">
                   <div className="relative h-64 overflow-hidden shrink-0">
