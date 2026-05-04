@@ -1,4 +1,5 @@
 # AGENTS.md — Congo Tourisme · Securits Tech
+
 > Ce fichier est lu automatiquement par Google Antigravity avant chaque tâche.
 > Il définit l'identité du projet, les règles de développement et les contraintes à respecter absolument.
 
@@ -17,6 +18,7 @@
 ## 🛠️ Stack Technologique — À RESPECTER ABSOLUMENT
 
 ### Frontend
+
 - **Framework** : Next.js 14 (App Router) — obligatoire pour le SEO
 - **Styles** : Tailwind CSS uniquement — aucun framework CSS alternatif
 - **Composants UI** : shadcn/ui
@@ -26,6 +28,7 @@
 - **Icônes** : Lucide React
 
 ### Backend
+
 - **Runtime** : Node.js avec NestJS (TypeScript strict)
 - **ORM** : Prisma avec PostgreSQL
 - **Authentification** : JWT (access token 15min + refresh token 7j) + OAuth2 Google/Facebook
@@ -34,19 +37,23 @@
 - **SMS** : Twilio
 
 ### Base de données
+
 - **Principal** : PostgreSQL (via Prisma)
 - **Cache** : Redis (sessions, rate limiting)
 
 ### Chatbot IA
+
 - **Modèle** : API Claude d'Anthropic (`claude-sonnet-4-20250514`)
 - **Intégration** : Appel API depuis le backend NestJS uniquement (jamais depuis le frontend)
 - **Personnalité** : Agent nommé "Kongo", expert du tourisme congolais
 
 ### Paiements
+
 - **International** : Stripe (cartes bancaires)
 - **Local Afrique** : MTN Mobile Money + Airtel Money (via API dédiée)
 
 ### Infrastructure & Déploiement
+
 - **Conteneurisation** : Docker + Docker Compose
 - **CI/CD** : GitHub Actions
 - **Hébergement** : VPS Linux Ubuntu 24.04
@@ -55,7 +62,7 @@
 
 ## 📐 Architecture du Projet
 
-```
+```text
 congo-tourisme/
 ├── apps/
 │   ├── frontend/          # Next.js 14
@@ -74,12 +81,14 @@ congo-tourisme/
 ## 👥 Les 3 Rôles Utilisateurs
 
 ### 1. ADMIN (Securits Tech)
+
 - Compte unique, protégé, non inscriptible publiquement
 - Accès total à toutes les données
 - Gère les abonnements, valide les opérateurs, modère les contenus
 - Tableau de bord avec revenus, KPIs, statistiques globales
 
 ### 2. OPÉRATEUR (client payant)
+
 - S'inscrit, soumet un dossier, attend validation Admin
 - Accède à son espace après paiement d'abonnement
 - Publie ses offres (hôtels, restaurants, sites, casinos, salles, agences)
@@ -87,6 +96,7 @@ congo-tourisme/
 - A un tableau de bord avec ses statistiques
 
 ### 3. TOURISTE / VISITEUR
+
 - S'inscrit librement (email ou OAuth)
 - Parcourt les offres, filtre, recherche
 - Réserve et paie en ligne
@@ -111,7 +121,7 @@ congo-tourisme/
 
 ## 🎨 Charte Graphique
 
-```
+```text
 Couleur principale :   #1A6B4A  (vert forêt congolais)
 Couleur secondaire :   #C8860A  (ocre doré africain)
 Couleur accent :       #E8F5EF  (vert très clair)

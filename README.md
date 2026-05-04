@@ -28,34 +28,40 @@ Propriété de **Securits Tech** (Pointe-Noire, Congo).
 ## ⚙️ Installation
 
 1. **Cloner le projet** :
+
    ```bash
    git clone [url-du-repo]
    cd congo-tourisme
    ```
 
 2. **Installer les dépendances** :
+
    ```bash
    npm install
    ```
 
 3. **Configurer l'environnement** :
    Copiez `.env.example` en `.env` dans la racine et remplissez les variables.
+
    ```bash
    cp .env.example .env
    ```
 
 4. **Démarrer l'infrastructure** :
+
    ```bash
    docker-compose up -d
    ```
 
 5. **Initialiser la base de données** :
+
    ```bash
    npx prisma migrate dev --name init --schema=packages/database/prisma/schema.prisma
    npm run seed --workspace=packages/database
    ```
 
 6. **Lancer l'application en développement** :
+
    ```bash
    npm run dev
    ```
@@ -92,7 +98,7 @@ Services couverts : `Auth`, `Listings`, `Reviews`, `Payments`, `Subscriptions`, 
 
 **Securits Tech**
 Pointe-Noire, République du Congo
-Email : contact@congotourisme.cg
+Email : <contact@congotourisme.cg>
 Tél : +242 05 302 8383 / 06 881 74 04
 
 ---

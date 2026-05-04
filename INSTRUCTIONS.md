@@ -1,4 +1,5 @@
 # INSTRUCTIONS.md — Feuille de Route Complète
+
 ## Plateforme "Congo Tourisme" · Propriété de Securits Tech
 
 > **À L'AGENT ANTIGRAVITY** : Ce fichier contient la description complète du projet à développer.
@@ -21,9 +22,10 @@ Un chatbot IA nommé **"Kongo"** guide les touristes sur les richesses du Congo.
 ## 📋 PHASE 1 — Initialisation & Architecture (Priorité Absolue)
 
 ### Tâche 1.1 — Scaffolding du projet
+
 Crée la structure monorepo suivante avec Turborepo :
 
-```
+```text
 congo-tourisme/
 ├── apps/
 │   ├── frontend/          # Next.js 14 App Router
@@ -42,12 +44,15 @@ congo-tourisme/
 ```
 
 ### Tâche 1.2 — Docker Compose
+
 Configure un `docker-compose.yml` avec :
+
 - PostgreSQL 16 (port 5432)
 - Redis 7 (port 6379)
 - pgAdmin (port 5050, pour visualiser la DB)
 
 ### Tâche 1.3 — Schéma de Base de Données (Prisma)
+
 Crée le schéma Prisma complet dans `packages/database/prisma/schema.prisma`.
 
 **Tables à créer :**
@@ -267,7 +272,7 @@ model RefreshToken {
 
 Crée les modules suivants dans `apps/backend/src/` :
 
-```
+```text
 src/
 ├── auth/               # Authentification JWT + OAuth
 ├── users/              # Gestion des utilisateurs
@@ -287,7 +292,8 @@ src/
 ### Tâche 2.2 — Routes API complètes
 
 #### AUTH
-```
+
+```text
 POST /api/auth/register          # Inscription touriste
 POST /api/auth/register-operator # Inscription opérateur
 POST /api/auth/login             # Connexion (email/password)
@@ -299,7 +305,8 @@ POST /api/auth/reset-password    # Réinitialisation
 ```
 
 #### LISTINGS (Offres)
-```
+
+```text
 GET    /api/listings             # Liste publique avec filtres
 GET    /api/listings/:id         # Détail d'une offre
 GET    /api/listings/featured    # Offres mises en avant
@@ -311,6 +318,7 @@ DELETE /api/listings/:id/images/:imageId # Supprimer une image
 ```
 
 **Filtres disponibles sur GET /api/listings :**
+
 - `type` (hotel, restaurant, excursion...)
 - `region` (Pointe-Noire, Brazzaville, Dolisie...)
 - `minPrice` / `maxPrice`
@@ -322,7 +330,8 @@ DELETE /api/listings/:id/images/:imageId # Supprimer une image
 - `sortBy` (price_asc, price_desc, rating, newest)
 
 #### RÉSERVATIONS
-```
+
+```text
 GET  /api/reservations/my           # Réservations du touriste connecté
 GET  /api/reservations/operator     # Réservations reçues (Opérateur)
 GET  /api/reservations/:id          # Détail d'une réservation
@@ -333,7 +342,8 @@ PATCH /api/reservations/:id/cancel  # Annuler (Touriste ou Opérateur)
 ```
 
 #### PAIEMENTS
-```
+
+```text
 POST /api/payments/create-intent    # Créer une intention Stripe
 POST /api/payments/confirm          # Confirmer le paiement
 POST /api/payments/mobile-money     # Paiement Mobile Money
@@ -341,13 +351,15 @@ POST /api/payments/webhook/stripe   # Webhook Stripe (events)
 ```
 
 #### CHATBOT KONGO
-```
+
+```text
 POST /api/chatbot/message           # Envoyer un message au chatbot
 GET  /api/chatbot/session/:sessionId # Historique d'une session
 ```
 
 #### ADMIN
-```
+
+```text
 GET    /api/admin/dashboard          # KPIs globaux
 GET    /api/admin/operators          # Liste des opérateurs
 PATCH  /api/admin/operators/:id/validate  # Valider un opérateur
@@ -366,7 +378,8 @@ POST   /api/admin/notifications/broadcast # Notification groupée
 Dans `apps/backend/src/chatbot/chatbot.service.ts`, implémente l'appel à l'API Claude.
 
 **System prompt à utiliser :**
-```
+
+```text
 Tu es Kongo, l'assistant touristique officiel de Congo Tourisme, 
 une plateforme de la société Securits Tech basée à Pointe-Noire, 
 République du Congo.
@@ -441,6 +454,7 @@ le Congo. Sois précis, utile et chaleureux.
 ```
 
 **Format de la réponse API chatbot :**
+
 ```json
 {
   "message": "string",
@@ -456,7 +470,8 @@ le Congo. Sois précis, utile et chaleureux.
 ### Tâche 3.1 — Pages à créer
 
 #### Pages Publiques (accessibles sans connexion)
-```
+
+```text
 /                          # Page d'accueil
 /search                    # Recherche avec filtres
 /listings/:id              # Détail d'une offre
@@ -468,7 +483,8 @@ le Congo. Sois précis, utile et chaleureux.
 ```
 
 #### Pages Touriste (connecté, rôle TOURIST)
-```
+
+```text
 /dashboard/tourist         # Mon tableau de bord
 /dashboard/reservations    # Mes réservations
 /dashboard/wishlist        # Mes favoris
@@ -477,7 +493,8 @@ le Congo. Sois précis, utile et chaleureux.
 ```
 
 #### Pages Opérateur (connecté, rôle OPERATOR + abonnement actif)
-```
+
+```text
 /dashboard/operator              # Tableau de bord opérateur
 /dashboard/operator/listings     # Mes offres
 /dashboard/operator/listings/new # Créer une offre
@@ -489,7 +506,8 @@ le Congo. Sois précis, utile et chaleureux.
 ```
 
 #### Pages Admin (connecté, rôle ADMIN)
-```
+
+```text
 /admin                           # Dashboard Admin
 /admin/operators                 # Gestion opérateurs
 /admin/operators/:id             # Détail opérateur
@@ -548,7 +566,7 @@ La page d'accueil doit inclure dans l'ordre :
 
 Crée un widget chatbot flottant affiché sur toutes les pages :
 
-```
+```text
 - Bouton flottant en bas à droite (couleur #1A6B4A)
 - Avatar de Kongo (créer un avatar simple stylisé)
 - Fenêtre de chat qui s'ouvre au clic
@@ -572,7 +590,7 @@ Crée un widget chatbot flottant affiché sur toutes les pages :
 Envoyer automatiquement des notifications dans ces situations :
 
 | Événement | Destinataire | Canal |
-|---|---|---|
+| --- | --- | --- |
 | Nouvelle réservation reçue | Opérateur | Email + SMS |
 | Réservation confirmée | Touriste | Email |
 | Réservation refusée | Touriste | Email |
@@ -586,14 +604,16 @@ Envoyer automatiquement des notifications dans ces situations :
 
 Créer une page de tarification claire avec 3 plans :
 
-**Plan Découverte (Gratuit 30 jours)**
+#### Plan Découverte (Gratuit 30 jours)
+
 - 3 offres publiées maximum
 - 1 image par offre
 - Statistiques basiques
 - Sans badge "Vérifié"
 - Support par email
 
-**Plan Professionnel**
+#### Plan Professionnel
+
 - Prix : 25 000 XAF / mois (à configurer par Admin)
 - Offres illimitées
 - 10 images par offre + vidéos
@@ -602,7 +622,8 @@ Créer une page de tarification claire avec 3 plans :
 - Statistiques détaillées
 - Support prioritaire
 
-**Plan Premium**
+#### Plan Premium
+
 - Prix : 50 000 XAF / mois (à configurer par Admin)
 - Tout le plan Pro +
 - Mise en avant sur la page d'accueil
@@ -615,6 +636,7 @@ Créer une page de tarification claire avec 3 plans :
 Le dashboard Admin doit afficher :
 
 **KPIs en temps réel :**
+
 - Revenus du mois en cours (XAF)
 - Nombre d'opérateurs actifs
 - Nombre de réservations ce mois
@@ -623,12 +645,14 @@ Le dashboard Admin doit afficher :
 - Offres en attente de modération
 
 **Graphiques :**
+
 - Revenus mensuels (12 derniers mois) - courbe
 - Réservations par type d'offre - camembert
 - Opérateurs par région - barres
 - Croissance des inscriptions - courbe
 
 **Actions rapides :**
+
 - Valider les opérateurs en attente
 - Modérer les offres signalées
 - Envoyer une notification groupée
@@ -638,6 +662,7 @@ Le dashboard Admin doit afficher :
 ## 📋 PHASE 5 — Tests et Déploiement
 
 ### Tâche 5.1 — Tests Essentiels
+
 - Tests unitaires sur les services critiques (auth, payment, reservation)
 - Tests E2E sur le flux complet : inscription → recherche → réservation → paiement
 - Test du chatbot Kongo avec différentes questions types
@@ -645,6 +670,7 @@ Le dashboard Admin doit afficher :
 ### Tâche 5.2 — Fichiers de Configuration
 
 Crée un `.env.example` complet :
+
 ```bash
 # Base de données
 DATABASE_URL="postgresql://user:password@localhost:5432/congo_tourisme"
@@ -690,7 +716,9 @@ NODE_ENV="development"
 ```
 
 ### Tâche 5.3 — README.md
+
 Crée un README.md clair avec :
+
 - Présentation du projet
 - Prérequis système
 - Instructions d'installation pas à pas
@@ -703,7 +731,7 @@ Crée un README.md clair avec :
 
 ## 🗺️ Ordre d'exécution recommandé pour l'agent
 
-```
+```text
 1. Scaffolding Turborepo + Docker Compose
 2. Schéma Prisma + migrations
 3. Backend NestJS : Auth + Users + Guards
@@ -734,7 +762,7 @@ L'application est considérée comme terminée quand :
 - [ ] Un opérateur peut s'inscrire, être validé par l'Admin, payer son abonnement, publier des offres avec photos, recevoir et gérer les réservations
 - [ ] L'Admin peut voir les revenus, valider les opérateurs, modérer les contenus, gérer les abonnements
 - [ ] Le chatbot Kongo répond en français et en anglais sur les richesses du Congo
-- [ ] L'application est responsive sur mobile, tablette et desktop
+- [ ] L'application est responsive on mobile, tablette and desktop
 - [ ] Les notifications email fonctionnent sur les événements clés
 - [ ] Les paiements Stripe fonctionnent en mode test
 - [ ] Docker Compose démarre tout le projet en une commande
