@@ -215,14 +215,17 @@ export default function HomePage() {
             {isLoading ? (
               <div className="col-span-full py-20 flex justify-center"><Loader2 className="w-12 h-12 animate-spin text-primary" /></div>
             ) : listings.length === 0 ? (
-              <div className="col-span-full py-20 text-center text-subtext font-bold text-xl">Les offres arrivent très bientôt. Préparez-vous !</div>
+              <div className="col-span-full py-20 text-center">
+                <p className="text-subtext font-bold text-xl mb-4">Aucune offre disponible pour le moment.</p>
+                <p className="text-sm text-gray-500 bg-gray-100 p-4 rounded-xl inline-block">🛠️ <b>Astuce Admin :</b> Lancez <code className="bg-white px-2 py-1 rounded">npm run seed --workspace=packages/database</code> pour générer les 3 opérateurs fictifs.</p>
+              </div>
             ) : (
               listings.map((listing, i) => (
                 <motion.div key={listing.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }}>
                   {/* Card design kept similar but modernized */}
                   <Link href={`/explore/${listing.id}`} className="group h-full flex flex-col bg-white rounded-[32px] overflow-hidden border border-gray-100 hover:shadow-2xl transition-all hover:-translate-y-2">
                     <div className="relative h-64 overflow-hidden shrink-0">
-                      <img src={listing.images?.[0]?.url || '/placeholder-listing.jpg'} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={listing.title} />
+                      <img src={listing.images?.[0]?.url || '/welcome.png'} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={listing.title} />
                       <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-sm">
                         <Star className="w-3.5 h-3.5 text-secondary fill-secondary" />
                         <span className="text-xs font-bold text-foreground">4.9</span>
