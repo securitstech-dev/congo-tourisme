@@ -66,14 +66,20 @@ export class ListingsService {
       where.rating = { gte: filters.rating };
     }
 
-    return this.prisma.listing.findMany({
-      where,
-      include: {
-        images: true,
-        operator: true,
-      },
-      orderBy: { createdAt: 'desc' }
-    });
+    try {
+      return await this.prisma.listing.findMany({
+        where,
+        include: {
+          images: true,
+          operator: true,
+        },
+        orderBy: { createdAt: 'desc' }
+      });
+    } catch (error: any) {
+      // Temporairement, renvoyer l'erreur pour déboguer le problème P2022
+      const common = require('@nestjs/common');
+      throw new common.InternalServerErrorException(`PRISMA ERROR: ${error.message}`);
+    }
   }
 
   async findByOperator(userId: string) {
