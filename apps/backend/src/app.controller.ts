@@ -11,7 +11,12 @@ export class AppController {
   }
 
   @Get('seed-db')
-  async seedDb() {
+  async seed() {
     return this.appService.seedData();
+  }
+
+  @Get('clear-db')
+  async clear() {
+    return this.appService.clearData();
   }
 }

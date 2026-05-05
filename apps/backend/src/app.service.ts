@@ -1,9 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from './prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AppService {
+  private readonly logger = new Logger(AppService.name);
+
   constructor(private prisma: PrismaService) {}
 
   getHello(): string {
@@ -150,5 +152,28 @@ export class AppService {
     }
 
     return { message: "✅ Seed professionnel terminé avec succès ! Les 3 opérateurs fictifs ont été créés." };
+  }
+
+  async clearData() {
+    this.logger.log('Nettoyage manuel de la base de données demandé...');
+    
+    try {
+      // Order matters for foreign keys
+      await this.prisma.listingImage.deleteMany({});
+      await this.prisma.review.deleteMany({});
+      await this.prisma.reservation.deleteMany({});
+      await this.prisma.listing.deleteMany({});
+      await this.prisma.operatorDocument.deleteMany({});
+      await this.prisma.operator.deleteMany({});
+      await this.prisma.refreshToken.deleteMany({});
+      await this.prisma.user.deleteMany({
+        where: { role: { not: 'ADMIN' } }
+      });
+      
+      return { message: "✅ Base de données nettoyée avec succès. Elle est maintenant prête pour vos données réelles." };
+    } catch (error) {
+      this.logger.error(`Erreur lors du nettoyage: ${error.message}`);
+      throw new Error(`Erreur nettoyage: ${error.message}`);
+    }
   }
 }
