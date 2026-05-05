@@ -48,18 +48,71 @@ export default function HomePage() {
     '/hero-brazzaville-placeholder.png', // Prompt 3
   ];
 
+  // Données de démonstration : s'affichent si l'API est inaccessible
+  const demoListings = [
+    {
+      id: 'demo-1',
+      title: 'Suite Diplomatique avec Vue Fleuve',
+      listingType: 'HOTEL_SUITE',
+      pricePerNight: 185000,
+      pricePerPerson: null,
+      priceFlatRate: null,
+      images: [{ url: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?q=80&w=800' }],
+      operator: { city: 'Brazzaville', businessName: 'Grand Hôtel de Brazza' },
+    },
+    {
+      id: 'demo-2',
+      title: 'Table VIP Coucher de Soleil',
+      listingType: 'RESTAURANT_TABLE',
+      pricePerNight: null,
+      pricePerPerson: 35000,
+      priceFlatRate: null,
+      images: [{ url: 'https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?q=80&w=800' }],
+      operator: { city: 'Brazzaville', businessName: 'Mami Wata Riverside' },
+    },
+    {
+      id: 'demo-3',
+      title: 'Chambre Executive Ocean View',
+      listingType: 'HOTEL_ROOM',
+      pricePerNight: 145000,
+      pricePerPerson: null,
+      priceFlatRate: null,
+      images: [{ url: 'https://images.unsplash.com/photo-1590490360182-c33d57733427?q=80&w=800' }],
+      operator: { city: 'Pointe-Noire', businessName: 'Atlantic Palace' },
+    },
+    {
+      id: 'demo-4',
+      title: 'Expédition Gorilles (3 jours)',
+      listingType: 'EXCURSION',
+      pricePerNight: null,
+      pricePerPerson: 950000,
+      priceFlatRate: null,
+      images: [{ url: 'https://images.unsplash.com/photo-1542401886-65d6c61db217?q=80&w=800' }],
+      operator: { city: 'Odzala', businessName: 'Safari Congo Odzala' },
+    },
+  ];
+
   useEffect(() => {
     const fetchListings = async () => {
       try {
         const res = await api.get('/listings');
-        setListings(res.data.slice(0, 4));
+        // Si l'API retourne des données, on les utilise
+        if (res.data && res.data.length > 0) {
+          setListings(res.data.slice(0, 4));
+        } else {
+          // Sinon, afficher les données de démo
+          setListings(demoListings);
+        }
       } catch (error) {
-        console.error('Failed to fetch listings:', error);
+        // En cas d'erreur (backend inaccessible), afficher les démos
+        console.warn('API inaccessible, affichage des données de démonstration.');
+        setListings(demoListings);
       } finally {
         setIsLoading(false);
       }
     };
     fetchListings();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
