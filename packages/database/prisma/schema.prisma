@@ -64,8 +64,8 @@ model Operator {
   trialEndsAt       DateTime?        // Date de fin des 14 jours d'essai
   isTrialUsed       Boolean          @default(false)
   
-  isSustainable     Boolean          @default(false) // Badge Tourisme Durable - TODO: migration required
-  hasSecurityQuitus Boolean          @default(false) // Quitus Sapeurs Pompiers - TODO: migration required
+  // isSustainable     Boolean          @default(false) // Badge Tourisme Durable - TODO: migration required
+  // hasSecurityQuitus Boolean          @default(false) // Quitus Sapeurs Pompiers - TODO: migration required
   
   subscriptionPlan  SubscriptionPlan @default(STARTER)
   subscriptionEnd   DateTime?
