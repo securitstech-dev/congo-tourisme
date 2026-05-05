@@ -26,6 +26,7 @@ model User {
   reservations  Reservation[]
   reviews       Review[]
   refreshTokens RefreshToken[]
+  referrals     Referral[] @relation("Referrer")
 }
 
 enum UserRole {
@@ -64,12 +65,17 @@ model Operator {
   trialEndsAt       DateTime?        // Date de fin des 14 jours d'essai
   isTrialUsed       Boolean          @default(false)
   
+  isSustainable     Boolean          @default(false) // Badge Tourisme Durable
+  hasSecurityQuitus Boolean          @default(false) // Quitus Sapeurs Pompiers
+  
   subscriptionPlan  SubscriptionPlan @default(STARTER)
   subscriptionEnd   DateTime?
   listings          Listing[]
   reservations      Reservation[]
+  events            Event[]          // Evénements (Kermesses, Concerts...)
   subscriptions     Subscription[]   // Historique des abonnements
   createdAt         DateTime         @default(now())
+
   updatedAt         DateTime         @updatedAt
 }
 
@@ -296,4 +302,70 @@ model ChatbotKnowledge {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// --- MODULES INNOVATION CONGO ---
+
+// 1. Kermesses & Événements
+model Event {
+  id            String      @id @default(cuid())
+  operatorId    String
+  operator      Operator    @relation(fields: [operatorId], references: [id])
+  title         String
+  description   String      @db.Text
+  location      String
+  city          String
+  startDate     DateTime
+  endDate       DateTime
+  price         Float       @default(0)
+  currency      String      @default("XAF")
+  category      EventCategory
+  imageUrl      String?
+  isFeatured    Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+enum EventCategory {
+  KERMESSE
+  CONCERT
+  FESTIVAL
+  TRADITIONAL_CEREMONY
+  EXHIBITION
+  SPORT
+  NIGHTLIFE
+}
+
+// 2. Parrainage "Mwana Mboka"
+model Referral {
+  id              String   @id @default(cuid())
+  referrerId      String   // Celui qui parraine
+  referrer        User     @relation("Referrer", fields: [referrerId], references: [id])
+  referredEmail   String   // L'email de la personne invitée
+  status          ReferralStatus @default(PENDING)
+  rewardClaimed   Boolean  @default(false)
+  createdAt       DateTime @default(now())
+}
+
+enum ReferralStatus {
+  PENDING
+  REGISTERED
+  COMPLETED_FIRST_BOOKING
+}
+
+// 3. Logistique & Infos locales (CFCO, RN1)
+model LogisticsInfo {
+  id          String   @id @default(cuid())
+  type        LogisticsType
+  title       String
+  content     String   @db.Text
+  status      String   // ex: "Circulation Fluide", "Retardé", "Travaux"
+  lastUpdated DateTime @default(now())
+}
+
+enum LogisticsType {
+  TRAIN_CFCO
+  ROAD_STATUS_RN1
+  ROAD_STATUS_RN2
+  FLIGHT_AIR_CONGO
 }

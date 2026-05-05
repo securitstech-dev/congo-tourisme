@@ -729,7 +729,33 @@ Crée un README.md clair avec :
 
 ---
 
+## 📋 PHASE 6 — Innovation & Écosystème Congo
+
+### Tâche 6.1 — Module Kermesses & Événements
+
+- Liste des événements locaux avec filtres par ville (PNR, BZV, Dolisie...).
+- Billetterie simple avec paiement Mobile Money.
+- Mise en avant par l'Admin.
+
+### Tâche 6.2 — Parrainage "Mwana Mboka"
+
+- Système de code de parrainage pour la diaspora et les locaux.
+- Récompenses (crédits ou réductions) après la première réservation du filleul.
+
+### Tâche 6.3 — Logistique & Infos (CFCO / RN1)
+
+- Flux d'informations sur l'état des routes (RN1, RN2) et horaires CFCO.
+- Annuaire de chauffeurs 4x4 certifiés pour les sites naturels.
+
+### Tâche 6.4 — Badge "Tourisme Durable"
+
+- Système de certification par l'Admin pour les opérateurs écologiques.
+- Filtre dédié dans la recherche.
+
+---
+
 ## 🗺️ Ordre d'exécution recommandé pour l'agent
+
 
 ```text
 1. Scaffolding Turborepo + Docker Compose
@@ -748,8 +774,9 @@ Crée un README.md clair avec :
 14. Frontend : Tableau de bord Admin
 15. Frontend : Widget Chatbot Kongo
 16. Frontend : Paiement (Stripe + Mobile Money)
-17. Tests unitaires et E2E
-18. Docker + scripts de déploiement
+17. Modules Innovation Congo (Événements, Parrainage, Logistique)
+18. Tests unitaires et E2E
+19. Docker + scripts de déploiement
 ```
 
 ---
