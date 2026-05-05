@@ -43,9 +43,9 @@ export default function HomePage() {
 
   // Placeholders pour les futures images (Prompts à fournir à l'utilisateur)
   const heroImages = [
-    '/hero-odzala-placeholder.jpg', // Prompt 1
-    '/hero-pointe-noire-placeholder.jpg', // Prompt 2
-    '/hero-brazzaville-placeholder.jpg', // Prompt 3
+    '/hero-odzala-placeholder.png', // Prompt 1
+    '/hero-pointe-noire-placeholder.png', // Prompt 2
+    '/hero-brazzaville-placeholder.png', // Prompt 3
   ];
 
   useEffect(() => {
@@ -311,7 +311,7 @@ export default function HomePage() {
       {/* 6. CTA FINAL (Social Proof) */}
       <section className="py-32 bg-primary relative overflow-hidden">
         {/* Placeholder for faces image - Prompt 4 */}
-        <div className="absolute inset-0 opacity-20 bg-[url('/community-faces-placeholder.jpg')] bg-cover bg-center mix-blend-overlay" />
+        <div className="absolute inset-0 opacity-20 bg-[url('/community-faces-placeholder.png')] bg-cover bg-center mix-blend-overlay" />
         <div className="container mx-auto px-6 relative z-10 text-center text-white">
           <h2 className="text-5xl md:text-7xl font-black tracking-tighter mb-8 drop-shadow-lg">Le Congo n'attend que vous.</h2>
           <p className="text-2xl font-medium text-white/90 max-w-2xl mx-auto mb-12">Rejoignez des milliers de touristes et d'opérateurs qui utilisent déjà Congo Tourisme pour redécouvrir le pays.</p>
